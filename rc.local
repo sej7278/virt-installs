@@ -1,0 +1,7 @@
+if test -d /etc/boot.d ; then
+	run-parts /etc/boot.d
+fi
+
+# fix pci passthru
+chmod 666 /sys/bus/pci/devices/0000:02:00.0/config
+chmod 666 /sys/bus/pci/devices/0000:02:00.1/config
