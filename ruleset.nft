@@ -1,0 +1,15 @@
+flush ruleset
+
+add table ip filter
+add chain ip filter INPUT { type filter hook input priority 0; policy drop; }
+add chain ip filter FORWARD { type filter hook forward priority 0; policy drop; }
+add chain ip filter OUTPUT { type filter hook output priority 0; policy accept; }
+add rule ip filter INPUT iifname "br0" ip daddr 192.168.1.2 accept
+add rule ip filter INPUT ct state related,established accept
+add rule ip filter INPUT ct state invalid drop
+add rule ip filter INPUT iifname "lo" accept
+
+add table ip6 filter
+add chain ip6 filter INPUT { type filter hook input priority 0; policy drop; }
+add chain ip6 filter FORWARD { type filter hook forward priority 0; policy drop; }
+add chain ip6 filter OUTPUT { type filter hook output priority 0; policy drop; }
