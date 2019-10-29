@@ -1,0 +1,3 @@
+SUBSYSTEM=="vfio", OWNER="root", GROUP="kvm"
+SUBSYSTEM=="usb", ATTR{idVendor}=="248a", ATTR{idProduct}=="8367", MODE="0666"
+

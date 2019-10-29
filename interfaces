@@ -1,0 +1,25 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+#allow-hotplug eth0
+auto eth0
+iface eth0 inet manual
+
+auto br0
+iface br0 inet static
+	address 192.168.1.2
+	netmask 255.255.255.0
+	gateway 192.168.1.1
+	network 192.168.1.0
+	broadcast 192.168.1.255
+	bridge ports eth0 
+	bridge_stp off
+	bridge_fd 0
+	bridge_maxwait 0
+	pre-up brctl addbr br0 && brctl addif br0 eth0
+
