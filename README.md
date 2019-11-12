@@ -6,7 +6,7 @@ libvirt scripts for various operating systems
 ```
 apt install qemu-kvm libvirt-daemon libvirt-clients libvirt-daemon-system virtinst \
 libosinfo-bin bridge-utils virt-top libguestfs-tools libosinfo-bin  qemu-system virt-manager \
-remmina-plugin-spice virt-viewer spice-client-gtk spice-vdagent
+remmina-plugin-spice virt-viewer spice-client-gtk spice-vdagent ovmf
 ```
 
 #### Allow bridging as non-root:
