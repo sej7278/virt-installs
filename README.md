@@ -31,7 +31,7 @@ ctrl-shift-]
 
 #### Convert disk from virtualbox:
 ```
-qemu-img convert -f vdi -O qcow2 win10.vdi win10.qcow2
+qemu-img convert -f vdi -O qcow2 win10.vdi -p -S 512 win10.qcow2
 ```
 
 #### List all --os-variant's:
@@ -51,7 +51,7 @@ chmod 666 /sys/bus/pci/devices/0000:02:00.0/config
 chmod 666 /sys/bus/pci/devices/0000:02:00.1/config
 ```
 
-#### To prevent drivers binding before vfio-pci add this to /etc/modprobe.d/kvm-intel.conf:
+#### To prevent drivers binding before vfio-pci add this to /etc/modprobe.d/kvm-intel.conf (not grub.cfg like a lot of Arch tutorials!):
 ```
 options vfio-pci ids=10de:128b,10de:0e0f
 softdep nouveau pre: vfio-pci
