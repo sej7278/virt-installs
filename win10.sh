@@ -17,6 +17,6 @@ virt-install \
 --network bridge=br0,model=virtio \
 --input type=tablet,bus=virtio \
 --metadata title='Windows 10' \
---disk ~/virtio-win-0.1.172.iso,device=cdrom \
---cdrom ~/Win10_1903_V2_English_x64.iso \
+--disk ~/virtio-win-0.1.173.iso,device=cdrom \
+--cdrom ~/Win10_1909_English_x64.iso \
 --boot menu=on
