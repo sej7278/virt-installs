@@ -15,8 +15,8 @@ virt-install \
 --input tablet,type=virtio \
 --network bridge=br0,model=virtio \
 --metadata title='Debian Buster' \
---filesystem type=mount,mode=mapped,source=/home/simon/mymount,target=mymount \
---cdrom ~/debian-10.1.0-amd64-DVD-1.iso
+--filesystem type=mount,mode=passthrough,source=/home/simon/mymount,target=mymount \
+--cdrom ~/debian-10.2.0-amd64-DVD-1.iso
 
 
 <<COMMENTS
