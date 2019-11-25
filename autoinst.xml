@@ -1,0 +1,941 @@
+<?xml version="1.0"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+  <audit-laf>
+    <auditd> <!-- 4.1.1.2, 4.1.1.3 -->
+      <action_mail_acct>root</action_mail_acct>
+      <admin_space_left>50</admin_space_left>
+      <admin_space_left_action>halt</admin_space_left_action>
+      <disk_error_action>SUSPEND</disk_error_action>
+      <disk_full_action>SUSPEND</disk_full_action>
+      <disp_qos>lossy</disp_qos>
+      <dispatcher>/sbin/audispd</dispatcher>
+      <flush>INCREMENTAL</flush>
+      <freq>20</freq>
+      <log_file>/var/log/audit/audit.log</log_file>
+      <log_format>RAW</log_format>
+      <max_log_file>1024</max_log_file>
+      <max_log_file_action>keep_logs</max_log_file_action>
+      <name_format>NONE</name_format>
+      <num_logs>4</num_logs>
+      <space_left>75</space_left>
+      <space_left_action>email</space_left_action>
+    </auditd>
+    <rules/>
+  </audit-laf>
+  <bootloader>
+    <global>
+      <activate>true</activate>
+      <append>resume=/dev/sda1 splash=silent quiet showopts rd.shell=0 audit=1</append>
+      <boot_boot>false</boot_boot>
+      <boot_extended>false</boot_extended>
+      <boot_mbr>false</boot_mbr>
+      <boot_root>true</boot_root>
+      <generic_mbr>true</generic_mbr>
+      <gfxmode>auto</gfxmode>
+      <hiddenmenu>false</hiddenmenu>
+      <os_prober>false</os_prober>
+      <terminal>console</terminal>
+      <timeout config:type="integer">1</timeout>
+      <trusted_grub>false</trusted_grub>
+    </global>
+    <loader_type>grub2</loader_type>
+  </bootloader>
+  <deploy_image>
+    <image_installation config:type="boolean">false</image_installation>
+  </deploy_image>
+  <general>
+    <ask-list config:type="list"/>
+    <mode>
+      <confirm config:type="boolean">false</confirm>
+      <final_halt config:type="boolean">true</final_halt>
+      <final_reboot config:type="boolean">false</final_reboot>
+      <halt config:type="boolean">false</halt>
+      <second_stage config:type="boolean">true</second_stage>
+    </mode>
+    <proposals config:type="list"/>
+    <signature-handling> <!-- 1.2.2 -->
+      <accept_file_without_checksum config:type="boolean">false</accept_file_without_checksum>
+      <accept_non_trusted_gpg_key config:type="boolean">false</accept_non_trusted_gpg_key>
+      <accept_unknown_gpg_key config:type="boolean">false</accept_unknown_gpg_key>
+      <accept_unsigned_file config:type="boolean">false</accept_unsigned_file>
+      <accept_verification_failed config:type="boolean">false</accept_verification_failed>
+      <import_gpg_key config:type="boolean">false</import_gpg_key>
+    </signature-handling>
+    <storage/>
+  </general>
+  <groups config:type="list"/>
+  <host>
+    <hosts config:type="list">
+      <hosts_entry>
+        <host_address>127.0.0.1</host_address>
+        <names config:type="list">
+          <name>localhost</name>
+        </names>
+      </hosts_entry>
+      <hosts_entry>
+        <host_address>192.168.0.42</host_address>
+        <names config:type="list">
+          <name>suse12cis</name>
+        </names>
+      </hosts_entry>
+    </hosts>
+  </host>
+  <language>
+    <language>en_GB</language>
+  </language>
+  <login_settings/>
+  <networking>
+    <dns>
+      <domain></domain>
+      <hostname>suse12cis</hostname>
+      <nameservers config:type="list">
+        <nameserver>192.168.0.1</nameserver>
+        <nameserver>8.8.8.8</nameserver>
+      </nameservers>
+      <resolv_conf_policy>auto</resolv_conf_policy>
+      <searchlist config:type="list">
+        <search>home</search>
+      </searchlist>
+      <write_hostname config:type="boolean">false</write_hostname>
+    </dns>
+    <interfaces config:type="list">
+      <interface>
+        <bootproto>static</bootproto>
+        <device>eth0</device>
+        <ipaddr>192.168.0.42</ipaddr>
+        <netmask>255.255.255.0</netmask>
+        <prefixlen>24</prefixlen>
+        <startmode>auto</startmode>
+      </interface>
+      <interface>
+        <bootproto>static</bootproto>
+        <device>lo</device>
+        <firewall>no</firewall>
+        <ipaddr>127.0.0.1</ipaddr>
+        <netmask>255.0.0.0</netmask>
+        <network>127.0.0.0</network>
+        <prefixlen>8</prefixlen>
+        <startmode>nfsroot</startmode>
+        <usercontrol>no</usercontrol>
+      </interface>
+    </interfaces>
+    <ipv6 config:type="boolean">false</ipv6>
+    <keep_install_network config:type="boolean">true</keep_install_network>
+    <managed config:type="boolean">false</managed>
+    <routing>
+      <ipv4_forward config:type="boolean">false</ipv4_forward>
+      <ipv6_forward config:type="boolean">false</ipv6_forward>
+      <routes config:type="list">
+        <route>
+          <destination>default</destination>
+          <device>eth0</device>
+          <gateway>192.168.0.1</gateway>
+          <netmask>-</netmask>
+        </route>
+      </routes>
+    </routing>
+  </networking>
+  <ntp-client>
+    <ntp_policy>auto</ntp_policy>
+    <peers config:type="list">
+      <peer>
+        <address>uk.pool.ntp.org</address>
+        <options>iburst</options>
+        <type>server</type>
+      </peer>
+    </peers>
+    <restricts config:type="list"/>
+    <start_at_boot config:type="boolean">false</start_at_boot>
+    <start_in_chroot config:type="boolean">false</start_in_chroot>
+    <sync_interval config:type="integer">5</sync_interval>
+    <synchronize_time config:type="boolean">true</synchronize_time>
+  </ntp-client>
+  <partitioning config:type="list">
+    <drive>
+      <disklabel>msdos</disklabel>
+      <initialize config:type="boolean">true</initialize>
+      <partitions config:type="list">
+        <partition>
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <mount>/boot</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">1</partition_nr>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>300M</size>
+          <subvolumes config:type="list"/>
+        </partition>
+        <partition>
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <format config:type="boolean">false</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lvm_group>system</lvm_group>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">142</partition_id>
+          <partition_nr config:type="integer">2</partition_nr>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>max</size>
+          <subvolumes config:type="list"/>
+        </partition>
+      </partitions>
+      <pesize/>
+      <type config:type="symbol">CT_DISK</type>
+      <use>all</use>
+    </drive>
+    <drive>
+      <device>/dev/system</device>
+      <disklabel>msdos</disklabel>
+      <initialize config:type="boolean">true</initialize>
+      <partitions config:type="list">
+        <partition> <!-- 1.1.13, 1.1.14 -->
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lv_name>home</lv_name>
+          <mount>/home</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">1</partition_nr>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>1G</size>
+          <subvolumes config:type="list"/>
+        </partition>
+        <partition>
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">swap</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lv_name>swap</lv_name>
+          <mount>swap</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">130</partition_id>
+          <partition_nr config:type="integer">2</partition_nr>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>1G</size>
+          <subvolumes config:type="list"/>
+        </partition>
+        <partition> <!-- 1.1.16 -->
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lv_name>var</lv_name>
+          <mount>/var</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">3</partition_nr>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>1G</size>
+          <subvolumes config:type="list"/>
+        </partition>
+        <partition> <!-- 1.1.7-1.1.10 -->
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lv_name>vartmp</lv_name>
+          <mount>/var/tmp</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">4</partition_nr>
+          <fstopt>nodev,noexec,nosuid</fstopt>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>1G</size>
+          <subvolumes config:type="list"/>
+        </partition>
+        <partition> <!-- 1.1.11 -->
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lv_name>varlog</lv_name>
+          <mount>/var/log</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">5</partition_nr>
+          <fstopt>nodev,noexec,nosuid</fstopt>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>1G</size>
+          <subvolumes config:type="list"/>
+        </partition>
+        <partition> <!-- 1.1.12 -->
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lv_name>varlogaudit</lv_name>
+          <mount>/var/log/audit</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">6</partition_nr>
+          <fstopt>nodev,noexec,nosuid</fstopt>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>1G</size>
+          <subvolumes config:type="list"/>
+        </partition>
+        <partition>
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lv_name>root</lv_name>
+          <mount>/</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">7</partition_nr>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>max</size>
+          <subvolumes config:type="list"/>
+        </partition>
+        <partition> <!-- 1.1.2-1.1.5, 1.1.15-1.1.17 -->
+          <create config:type="boolean">true</create>
+          <crypt_fs config:type="boolean">false</crypt_fs>
+          <filesystem config:type="symbol">ext4</filesystem>
+          <format config:type="boolean">true</format>
+          <loop_fs config:type="boolean">false</loop_fs>
+          <lv_name>tmp</lv_name>
+          <mount>/tmp</mount>
+          <mountby config:type="symbol">device</mountby>
+          <partition_id config:type="integer">131</partition_id>
+          <partition_nr config:type="integer">8</partition_nr>
+          <fstopt>nodev,noexec,nosuid</fstopt>
+          <pool config:type="boolean">false</pool>
+          <raid_options/>
+          <resize config:type="boolean">false</resize>
+          <size>1G</size>
+          <subvolumes config:type="list"/>
+        </partition>
+      </partitions>
+      <pesize/>
+      <type config:type="symbol">CT_LVM</type>
+      <use>all</use>
+    </drive>
+  </partitioning>
+  <scripts>
+    <post-scripts config:type="list">
+      <script> <!-- 1.1.1.1-1.1.1.8, 1.1.18-1.1.20, 3.5.1-3.5.4 -->
+        <filename>modprobe.sh</filename>
+        <source>
+        <![CDATA[
+cat << EOF > /etc/modprobe.d/99-cis.conf
+install cramfs /bin/true
+install freevxfs /bin/true
+install jffs2 /bin/true
+install hfs /bin/true
+install hfsplus /bin/true
+install squashfs /bin/true
+install udf /bin/true
+install vfat /bin/true
+install dccp /bin/true
+install sctp /bin/true
+install rds /bin/true
+install tipc /bin/true
+blacklist sr_mod
+install sr_mod /bin/true
+blacklist cdrom
+install cdrom /bin/true
+blacklist usb_storage
+install usb-storage /bin/true
+EOF
+]]>
+        </source>
+      </script>
+      <script> <!-- 1.3.2 -->
+        <filename>aide.sh</filename>
+        <source>
+        <![CDATA[
+echo "0 5 * * * /usr/bin/aide --check" >> /var/spool/cron/tabs/root
+/usr/bin/aide --init -B 'database_out=file:/var/lib/aide/aide.db.gz'
+]]>
+        </source>
+      </script>
+      <script> <!-- 1.4.1-1.4.2 -->
+        <filename>grub.sh</filename>
+        <source>
+        <![CDATA[
+cat <<EOF > /etc/grub.d/42_password
+#!/bin/sh
+exec tail -n +3 $0
+set superusers="root"
+password_pbkdf2 root
+grub.pbkdf2.sha512.10000.FDA102F5F5C9F30E067099F94749CFAD7FAB191029CD9F6C2551DD98A2AD243479F4B0235366025907A1E5E9693F06C69B762B33F8ED68DA085628CFDC0CB353.CEFC2152FA52DA6E3C1F9A291F83A22770358549FD5E9A0C1D540FF94916E78D4506784C17136C72644ADD85B0F0F60DB53267BF1742C87F5D71BF175E03BE89
+export superusers
+set unrestricted_menu="y"
+export unrestricted_menu
+EOF
+
+grub2-mkconfig -o /boot/grub2/grub.cfg
+chown root:root /boot/grub2/grub.cfg
+chmod 600 /boot/grub2/grub.cfg
+chmod 700 /etc/grub.d/42_password
+]]>
+        </source>
+      </script>
+      <script> <!-- 1.6.2.2 -->
+        <filename>enforce.sh</filename>
+        <source>
+        <![CDATA[
+enforce /etc/apparmor.d/*
+]]>
+        /* this here to fix syntax highlighting */
+        </source>
+      </script>
+      <script> <!-- 1.7.1.1-1.7.1.6, 1.7.2 -->
+        <filename>motd.sh</filename>
+        <source>
+        <![CDATA[
+cat /dev/null > /etc/motd
+cat /dev/null > /etc/issue.net
+echo 'Authorized uses only. All activity may be monitored and reported.' > /etc/issue
+chown root:root /etc/motd
+chown root:root /etc/issue
+chown root:root /etc/issue.net
+chmod 644 /etc/motd
+chmod 644 /etc/issue
+chmod 644 /etc/issue.net
+
+mkdir -p /etc/dconf/profile/ /etc/dconf/db/gdm.d/
+cat << EOF > /etc/dconf/profile/gdm
+user-db:user
+system-db:gdm
+file-db:/usr/share/gdm/greeter-dconf-defaults
+EOF
+
+cat << EOF > /etc/dconf/db/gdm.d/01-banner-message
+[org/gnome/login-screen]
+banner-message-enable=true
+banner-message-text='Authorized uses only. All activity may be monitored and reported.'
+EOF
+]]>
+        </source>
+      </script>
+      <script> <!-- 1.5.1, 1.5.3, 3.1.1, 3.1.2, 3.2.1-3.2.8, 3.3.1-3.3.3 -->
+        <filename>sysctl.sh</filename>
+        <source>
+        <![CDATA[
+echo '* hard core 0' >> /etc/security/limits.conf
+
+cat << EOF > /etc/sysctl.d/cis.conf
+kernel.randomize_va_space = 2
+net.ipv4.ip_forward = 0
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.conf.lo.send_redirects = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
+net.ipv6.conf.lo.accept_redirects = 0
+net.ipv6.conf.eth0.accept_redirects = 0
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv4.conf.lo.accept_redirects = 0
+net.ipv4.conf.all.secure_redirects = 0
+net.ipv4.conf.default.secure_redirects = 0
+net.ipv4.conf.eth0.secure_redirects = 0
+net.ipv4.conf.lo.secure_redirects = 0
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+net.ipv4.conf.lo.log_martians = 1
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.tcp_syncookies = 1
+net.ipv6.conf.all.accept_ra = 0
+net.ipv6.conf.default.accept_ra = 0
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+net.ipv4.tcp_timestamps = 0
+kernel.sysrq = 0
+fs.suid_dumpable = 0
+net.ipv4.tcp_max_syn_backlog = 4096
+net.ipv4.tcp_max_orphans = 256
+net.ipv4.conf.all.proxy_arp = 0
+net.ipv4.conf.default.proxy_arp = 0
+net.ipv4.conf.lo.proxy_arp = 0
+EOF
+]]>
+        </source>
+      </script>
+      <script> <!-- 3.4.2-3.4.5 -->
+        <filename>tcpwrappers.sh</filename>
+        <source>
+        <![CDATA[
+echo "ALL: 192.168.0.0/255.255.255.0" > /etc/hosts.allow
+echo "ALL: ALL" > /etc/hosts.deny
+chown root:root /etc/hosts.allow
+chmod 644 /etc/hosts.allow
+chown root:root /etc/hosts.deny
+chmod 644 /etc/hosts.deny
+]]>
+        </source>
+      </script>
+      <script> <!-- 2.2.1.3 -->
+        <filename>chrony.sh</filename>
+        <source>
+        <![CDATA[
+echo 'OPTIONS="-4 -u chrony"' >> /etc/sysconfig/chronyd
+echo 'server uk.pool.ntp.org iburst' >> /etc/chrony.conf
+echo 'bindaddress 127.0.0.1' >> /etc/chrony.conf
+]]>
+        </source>
+      </script>
+      <script> <!-- 3.6.2-3.6.5 -->
+        <filename>iptables.sh</filename>
+        <source>
+        <![CDATA[
+echo '/usr/sbin/iptables-restore /etc/sysconfig/iptables' >> /etc/init.d/boot.local
+cat <<EOF > /etc/sysconfig/iptables
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -m conntrack --ctstate INVALID -j DROP
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p tcp -m conntrack --ctstate NEW -m tcp --dport 22 -j ACCEPT
+COMMIT
+EOF
+]]>
+        </source>
+      </script>
+      <script> <!-- 5.1.2-5.1.8 -->
+        <filename>cron.sh</filename>
+        <source>
+        <![CDATA[
+rm /etc/cron.deny /etc/at.deny
+touch /etc/at.allow /etc/cron.allow
+chown root:root /etc/crontab /etc/cron.* /etc/at.allow
+chmod 600 /etc/anacrontab /etc/crontab /etc/cron.allow /etc/at.allow
+chmod 700 /etc/cron.hourly /etc/cron.daily /etc/cron.weekly /etc/cron.monthly /etc/cron.d
+]]>
+        </source>
+      </script>
+      <script> <!-- 4.1.4-4.1.18 -->
+        <filename>audit.sh</filename>
+        <source>
+        <![CDATA[
+cat << EOF > /etc/audit/rules.d/cis.rules
+-a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change
+-a always,exit -F arch=b32 -S adjtimex -S settimeofday -S stime -k time-change
+-a always,exit -F arch=b64 -S clock_settime -k time-change
+-a always,exit -F arch=b32 -S clock_settime -k time-change
+-w /etc/localtime -p wa -k time-change
+-w /etc/group -p wa -k identity
+-w /etc/passwd -p wa -k identity
+-w /etc/gshadow -p wa -k identity
+-w /etc/shadow -p wa -k identity
+-w /etc/security/opasswd -p wa -k identity
+-a always,exit -F arch=b64 -S sethostname -S setdomainname -k system-locale
+-a always,exit -F arch=b32 -S sethostname -S setdomainname -k system-locale
+-w /etc/issue -p wa -k system-locale
+-w /etc/issue.net -p wa -k system-locale
+-w /etc/hosts -p wa -k system-locale
+-w /etc/sysconfig/network -p wa -k system-locale
+-w /etc/sysconfig/network-scripts/ -p wa -k system-locale
+-w /etc/selinux/ -p wa -k MAC-policy
+-w /usr/share/selinux/ -p wa -k MAC-policy
+-w /var/log/faillog -p wa -k logins
+-w /var/log/tallylog -p wa -k logins
+-w /var/log/lastlog -p wa -k logins
+-w /var/run/faillock/ -p wa -k logins
+-w /var/run/utmp -p wa -k session
+-w /var/log/wtmp -p wa -k logins
+-w /var/log/btmp -p wa -k logins
+-a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts
+-a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts
+-a always,exit -F arch=b64 -S unlink -S unlinkat -S rename -S renameat -F auid>=1000 \ -F auid!=4294967295 -k delete
+-a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -F auid>=1000 \ -F auid!=4294967295 -k delete
+-w /etc/sudoers -p wa -k scope
+-w /etc/sudoers.d/ -p wa -k scope
+-w /var/log/sudo.log -p wa -k actions
+-w /sbin/insmod -p x -k modules
+-w /sbin/rmmod -p x -k modules
+-w /sbin/modprobe -p x -k modules
+-a always,exit -F arch=b64 -S init_module -S delete_module -k modules
+-e 2
+EOF
+]]>
+        </source>
+      </script>
+      <script> <!-- 4.2.1.3 -->
+        <filename>rsyslog.sh</filename>
+        <source>
+        <![CDATA[
+echo '$FileCreateMode 0640' > /etc/rsyslog.d/cis.conf
+chown root:root /etc/rsyslog.conf /etc/rsyslog.d/cis.conf
+chmod 600 /etc/rsyslog.conf /etc/rsyslog.d/cis.conf
+]]>
+        </source>
+      </script>
+      <script> <!-- 5.2.1-5.2.15 -->
+        <filename>ssh.sh</filename>
+        <source>
+        <![CDATA[
+cat <<EOF > /etc/ssh/sshd_config
+AddressFamily inet
+ListenAddress 192.168.0.42
+Protocol 2
+AllowUsers simon
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-512
+Ciphers aes256-ctr,aes256-gcm@openssh.com
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521
+SyslogFacility AUTHPRIV
+LogLevel INFO
+LoginGraceTime 1m
+PermitRootLogin no
+StrictModes yes
+MaxAuthTries 3
+PermitEmptyPasswords no
+HostbasedAuthentication no
+IgnoreRhosts yes
+PasswordAuthentication yes
+ChallengeResponseAuthentication no
+GSSAPIAuthentication yes
+GSSAPICleanupCredentials no
+UsePAM yes
+AllowAgentForwarding no
+AllowTcpForwarding no
+X11Forwarding no
+PrintMotd no
+PrintLastLog yes
+PermitTunnel no
+UseDNS no
+Banner /etc/issue
+PermitUserEnvironment no
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
+Subsystem	sftp	/usr/libexec/openssh/sftp-server
+ClientAliveInterval 300
+ClientAliveCountMax 0
+EOF
+
+chown root:root /etc/ssh/sshd_config
+chmod 600 /etc/ssh/sshd_config
+]]>
+        </source>
+      </script>
+      <script> <!-- 5.3.1, 5.6 -->
+        <filename>pam.sh</filename>
+        <source>
+        <![CDATA[
+sed -i 's/^password.*requisite.*pam_cracklib.*$/password requisite pam_cracklib.so try_first_pass retry=3 minlen=14 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1/' /etc/pam.d/common-password
+echo 'auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900' >> /etc/pam.d/common-auth
+echo 'account required pam_tally2.so' >> /etc/pam.d/common-account
+echo 'auth required pam_wheel.so use_uid' >> /etc/pam.d/su
+]]>
+        </source>
+      </script>
+      <script> <!-- 5.4.2 -->
+        <filename>nologin.sh</filename>
+        <source>
+        <![CDATA[
+usermod -s /sbin/nologin at
+usermod -s /sbin/nologin bin
+usermod -s /sbin/nologin daemon
+usermod -s /sbin/nologin ftp
+usermod -s /sbin/nologin games
+usermod -s /sbin/nologin lp
+usermod -s /sbin/nologin man
+usermod -s /sbin/nologin news
+usermod -s /sbin/nologin nobody
+usermod -s /sbin/nologin uucp
+]]>
+        </source>
+      </script>
+      <script> <!-- 5.4.5, 6.2.6 -->
+        <filename>timeout.sh</filename>
+        <source>
+        <![CDATA[
+cat << EOF > /etc/profile.d/cis.sh
+test -t 0 && mesg n
+umask 027
+readonly TMOUT=600
+export TMOUT
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+EOF
+
+cat << EOF > /etc/profile.d/cis.csh
+mesg n 2>/dev/null
+umask 027
+set autologout=10
+set -r autologout=10
+setenv PATH /sbin:/bin:/usr/sbin:/usr/bin
+EOF
+]]>
+        </source>
+      </script>
+      <script> <!-- 5.5 -->
+        <filename>console.sh</filename>
+        <source>
+        <![CDATA[
+cat /dev/null > /etc/securetty
+]]>
+        </source>
+      </script>
+      <script> <!-- 5.6 -->
+        <filename>groups.sh</filename>
+        <source>
+        <![CDATA[
+usermod -aG wheel simon
+]]>
+        </source>
+      </script>
+      <script> <!-- 6.1.2-6.1.9 -->
+        <filename>perms.sh</filename>
+        <source>
+        <![CDATA[
+chmod 644 /etc/passwd
+chmod 644 /etc/passwd-
+chmod 000 /etc/shadow
+chmod 000 /etc/shadow-
+chmod 000 /etc/gshadow
+chmod 000 /etc/gshadow-
+chmod 644 /etc/group
+chmod 644 /etc/group-
+chown root:root /etc/passwd
+chown root:root /etc/passwd-
+chown root:root /etc/shadow
+chown root:root /etc/shadow-
+chown root:root /etc/gshadow
+chown root:root /etc/gshadow-
+chown root:root /etc/group
+chown root:root /etc/group-
+]]>
+        </source>
+      </script>
+      <script> <!-- 6.2.8-6.2.14 -->
+        <filename>perms.sh</filename>
+        <source>
+        <![CDATA[
+chmod 700 /home/simon
+chown simon:simon /home/simon
+rm /home/simon/.forward
+rm /home/simon/.netrc
+rm /home/simon/.rhosts
+cat /dev/null > /etc/hosts.equiv
+chmod 000 /etc/hosts.equiv
+chown root:root /etc/hosts.equiv
+]]>
+        </source>
+      </script>
+    </post-scripts>
+  </scripts>
+  <security>
+    <console_shutdown>ignore</console_shutdown>
+    <cracklib_dict_path>/usr/lib/cracklib_dict</cracklib_dict_path>
+    <disable_restart_on_update>no</disable_restart_on_update>
+    <disable_stop_on_removal>no</disable_stop_on_removal>
+    <displaymanager_remote_access>no</displaymanager_remote_access>
+    <displaymanager_root_login_remote>no</displaymanager_root_login_remote>
+    <displaymanager_shutdown>root</displaymanager_shutdown>
+    <displaymanager_xserver_tcp_port_6000_open>no</displaymanager_xserver_tcp_port_6000_open>
+    <extra_services>insecure</extra_services>
+    <fail_delay>3</fail_delay>
+    <gid_max>60000</gid_max>
+    <gid_min>1000</gid_min>
+    <hibernate_system>active_console</hibernate_system>
+    <kernel.sysrq>0</kernel.sysrq>
+    <mandatory_services>insecure</mandatory_services>
+    <net.ipv4.ip_forward>0</net.ipv4.ip_forward>
+    <net.ipv4.tcp_syncookies>1</net.ipv4.tcp_syncookies>
+    <net.ipv6.conf.all.forwarding>0</net.ipv6.conf.all.forwarding>
+    <pass_max_days>90</pass_max_days> <!-- 5.4.1.1 -->
+    <pass_min_days>7</pass_min_days> <!-- 5.4.1.2 -->
+    <pass_min_len>8</pass_min_len>
+    <pass_warn_age>7</pass_warn_age> <!-- 5.4.1.3 -->
+    <passwd_encryption>sha512</passwd_encryption> <!-- 5.3.4 -->
+    <passwd_remember_history>12</passwd_remember_history> <!-- 5.3.3 -->
+    <passwd_use_cracklib>yes</passwd_use_cracklib>
+    <permission_security>secure</permission_security>
+    <run_updatedb_as>nobody</run_updatedb_as>
+    <smtpd_listen_remote>no</smtpd_listen_remote>
+    <sys_gid_max>499</sys_gid_max>
+    <sys_gid_min>100</sys_gid_min>
+    <sys_uid_max>499</sys_uid_max>
+    <sys_uid_min>100</sys_uid_min>
+    <syslog_on_no_error>no</syslog_on_no_error>
+    <uid_max>60000</uid_max>
+    <uid_min>1000</uid_min>
+    <useradd_cmd>/usr/sbin/useradd.local</useradd_cmd>
+    <userdel_postcmd>/usr/sbin/userdel-post.local</userdel_postcmd>
+    <userdel_precmd>/usr/sbin/userdel-pre.local</userdel_precmd>
+  </security>
+  <services-manager>
+    <default_target>multi-user</default_target>
+    <services>
+      <disable config:type="list">
+        <service>bluetooth</service>
+        <service>dbus-org.bluez</service>
+        <service>dbus-org.opensuse.Network.DHCP4</service>
+        <service>dbus-org.opensuse.Network.DHCP6</service>
+        <service>xdm</service>
+        <service>autofs</service> <!-- 1.1.22 -->
+        <service>chargen</service> <!-- 2.1.1 -->
+        <service>chargen-udp</service>
+        <service>daytime</service> <!-- 2.1.2 -->
+        <service>daytime-udp</service>
+        <service>discard</service> <!-- 2.1.3 -->
+        <service>discard-udp</service>
+        <service>echo</service> <!-- 2.1.4 -->
+        <service>echo-udp</service>
+        <service>time</service> <!-- 2.1.5 -->
+        <service>time-udp</service>
+        <service>rexec</service> <!-- 2.1.6 -->
+        <service>rlogin</service>
+        <service>rsh</service>
+        <service>talk</service> <!-- 2.1.7 -->
+        <service>telnet</service> <!-- 2.1.8 -->
+        <service>tftp</service> <!-- 2.1.9 -->
+        <service>rsync</service> <!-- 2.1.10 -->
+        <service>xinetd</service> <!-- 2.1.11 -->
+        <service>ntpd</service>
+        <service>avahi-daemon</service> <!-- 2.2.3 -->
+        <service>cups</service> <!-- 2.2.4 -->
+        <service>dhcpd</service> <!-- 2.2.5 -->
+        <service>slapd</service> <!-- 2.2.6 -->
+        <service>nfs</service> <!-- 2.2.7 -->
+        <service>rpcbind</service>
+        <service>named</service> <!-- 2.2.8 -->
+        <service>apache2</service> <!-- 2.2.10 -->
+        <service>dovecot</service> <!-- 2.2.11 -->
+        <service>smb</service> <!-- 2.2.12 -->
+        <service>squid</service> <!-- 2.2.13 -->
+        <service>snmpd</service> <!-- 2.2.14 -->
+        <service>postfix</service> <!-- 2.2.15 -->
+        <service>ypserv</service> <!-- 2.2.16 -->
+        <service>atftpd</service> <!-- 2.2.17 -->
+        <service>rsyncd</service> <!-- 2.2.18 -->
+        <service>SuSEfirewall2</service>
+      </disable>
+      <enable config:type="list">
+        <service>apparmor</service>
+        <service>auditd</service> <!-- 4.1.2 -->
+        <service>btrfsmaintenance-refresh</service>
+        <service>cron</service> <!-- 5.1.1 -->
+        <service>haveged</service>
+        <service>irqbalance</service>
+        <service>purge-kernels</service>
+        <service>rollback</service>
+        <service>rsyslog</service> <!-- 4.2.1.1 -->
+        <service>spice-vdagentd</service>
+        <service>sshd</service>
+        <service>wicked</service>
+        <service>wickedd-auto4</service>
+        <service>wickedd-nanny</service>
+        <service>YaST2-Firstboot</service>
+        <service>YaST2-Second-Stage</service>
+        <service>getty@tty1</service>
+        <service>chronyd</service>
+        <service>rc-local</service>
+      </enable>
+    </services>
+  </services-manager>
+  <software>
+    <image/>
+    <install_recommended config:type="boolean">true</install_recommended>
+    <instsource/>
+    <patterns config:type="list">
+      <pattern>base</pattern>
+    </patterns>
+    <packages config:type="list">
+      <package>aide</package> <!-- 1.3.1 -->
+      <package>libapparmor1</package> <!-- 1.6.3 -->
+      <package>apparmor-utils</package>
+      <package>chrony</package> <!-- 2.2.1.1 -->
+      <package>tcpd</package> <!-- 3.4.1 -->
+      <package>iptables</package> <!-- 3.6.1 -->
+      <package>rsyslog</package> <!-- 4.2.3 -->
+    </packages>
+    <remove-packages config:type="list">
+      <package>prelink</package> <!-- 1.5.4 -->
+      <package>setroubleshoot</package> <!-- 1.6.1.4-->
+      <package>mcstrans</package> <!-- 1.6.1.5-->
+      <package>xorg-x11*</package> <!-- 2.2.2 -->
+      <package>ypbind</package> <!-- 2.3.1 -->
+      <package>rsh</package> <!-- 2.3.2 -->
+      <package>talk</package> <!-- 2.3.3 -->
+      <package>telnet</package> <!-- 2.3.4 -->
+      <package>openldap2-client</package> <!-- 2.3.5 -->
+      <package>wpa_supplicant</package> <!-- 3.7 -->
+      <package>vsftpd</package>  <!-- 2.2.9 -->
+    </remove-packages>
+  </software>
+  <timezone>
+    <hwclock>UTC</hwclock>
+    <timezone>Europe/London</timezone>
+  </timezone>
+  <user_defaults>
+    <expire/>
+    <group>100</group>
+    <groups/>
+    <home>/home</home>
+    <inactive>0</inactive>
+    <no_groups config:type="boolean">true</no_groups>
+    <shell>/bin/bash</shell>
+    <skel>/etc/skel</skel>
+    <umask>027</umask> <!-- 5.4.4 -->
+  </user_defaults>
+  <users config:type="list">
+    <user>
+      <encrypted config:type="boolean">false</encrypted>
+      <user_password>password</user_password>
+      <username>root</username>
+    </user>
+    <user>
+      <encrypted config:type="boolean">false</encrypted>
+      <home>/home/simon</home>
+      <shell>/bin/bash</shell>
+      <user_password>password</user_password>
+      <username>simon</username>
+    </user>
+  </users>
+</profile>
