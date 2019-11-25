@@ -74,7 +74,7 @@
         </names>
       </hosts_entry>
       <hosts_entry>
-        <host_address>192.168.0.42</host_address>
+        <host_address>192.168.1.3</host_address>
         <names config:type="list">
           <name>suse12cis</name>
         </names>
@@ -90,7 +90,7 @@
       <domain></domain>
       <hostname>suse12cis</hostname>
       <nameservers config:type="list">
-        <nameserver>192.168.0.1</nameserver>
+        <nameserver>192.168.1.1</nameserver>
         <nameserver>8.8.8.8</nameserver>
       </nameservers>
       <resolv_conf_policy>auto</resolv_conf_policy>
@@ -103,7 +103,7 @@
       <interface>
         <bootproto>static</bootproto>
         <device>eth0</device>
-        <ipaddr>192.168.0.42</ipaddr>
+        <ipaddr>192.168.1.3</ipaddr>
         <netmask>255.255.255.0</netmask>
         <prefixlen>24</prefixlen>
         <startmode>auto</startmode>
@@ -130,7 +130,7 @@
         <route>
           <destination>default</destination>
           <device>eth0</device>
-          <gateway>192.168.0.1</gateway>
+          <gateway>192.168.1.1</gateway>
           <netmask>-</netmask>
         </route>
       </routes>
@@ -495,7 +495,7 @@ EOF
         <filename>tcpwrappers.sh</filename>
         <source>
         <![CDATA[
-echo "ALL: 192.168.0.0/255.255.255.0" > /etc/hosts.allow
+echo "ALL: 192.168.1.0/255.255.255.0" > /etc/hosts.allow
 echo "ALL: ALL" > /etc/hosts.deny
 chown root:root /etc/hosts.allow
 chmod 644 /etc/hosts.allow
@@ -618,7 +618,7 @@ chmod 600 /etc/rsyslog.conf /etc/rsyslog.d/cis.conf
         <![CDATA[
 cat <<EOF > /etc/ssh/sshd_config
 AddressFamily inet
-ListenAddress 192.168.0.42
+ListenAddress 192.168.1.3
 Protocol 2
 AllowUsers simon
 HostKey /etc/ssh/ssh_host_rsa_key
