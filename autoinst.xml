@@ -718,6 +718,7 @@ EOF
         <source>
         <![CDATA[
 cat /dev/null > /etc/securetty
+echo 'auth [user_unknown=ignore success=ok ignore=ignore default=bad] pam_securetty.so' >> /etc/pam.d/login
 ]]>
         </source>
       </script>
