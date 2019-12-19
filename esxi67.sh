@@ -9,8 +9,8 @@ virt-install \
 --cpu host-passthrough \
 --machine q35 \
 --features kvm_hidden=on \
---ram 8192 \
---disk path=~/esxi67.qcow2,size=40,format=qcow2,sparse=true,bus=sata \
+--ram 16384 \
+--disk path=~/esxi67.qcow2,size=400,format=qcow2,sparse=true,bus=sata \
 --graphics spice \
 --video qxl \
 --network bridge=br0,model=e1000 \
