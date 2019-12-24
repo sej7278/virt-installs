@@ -742,7 +742,7 @@ EOF
 chown root:root /etc/ssh/sshd_config
 chmod 600 /etc/ssh/sshd_config
 chown root:root /etc/ssh/ssh_host_*key*
-chmod 640 /etc/ssh/ssh_host_*key*
+chmod 600 /etc/ssh/ssh_host_*key*
 ]]>
         </source>
       </script>
