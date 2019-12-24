@@ -2,12 +2,12 @@
 <!DOCTYPE profile>
 <profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
   <audit-laf>
-    <auditd> <!-- 4.1.1.2, 4.1.1.3 -->
+    <auditd> <!-- 4.1.1.2, 4.1.1.3, V-77309, V-77299, V-77271 -->
       <action_mail_acct>root</action_mail_acct>
       <admin_space_left>50</admin_space_left>
       <admin_space_left_action>halt</admin_space_left_action>
       <disk_error_action>SUSPEND</disk_error_action>
-      <disk_full_action>SUSPEND</disk_full_action>
+      <disk_full_action>syslog</disk_full_action>
       <disp_qos>lossy</disp_qos>
       <dispatcher>/sbin/audispd</dispatcher>
       <flush>INCREMENTAL</flush>
@@ -54,7 +54,7 @@
       <second_stage config:type="boolean">true</second_stage>
     </mode>
     <proposals config:type="list"/>
-    <signature-handling> <!-- 1.2.2 -->
+    <signature-handling> <!-- 1.2.2, V-77161 -->
       <accept_file_without_checksum config:type="boolean">false</accept_file_without_checksum>
       <accept_non_trusted_gpg_key config:type="boolean">false</accept_non_trusted_gpg_key>
       <accept_unknown_gpg_key config:type="boolean">false</accept_unknown_gpg_key>
@@ -197,7 +197,7 @@
       <disklabel>msdos</disklabel>
       <initialize config:type="boolean">true</initialize>
       <partitions config:type="list">
-        <partition> <!-- 1.1.13, 1.1.14 -->
+        <partition> <!-- 1.1.13, 1.1.14, V-77229, V-77261 -->
           <create config:type="boolean">true</create>
           <crypt_fs config:type="boolean">false</crypt_fs>
           <filesystem config:type="symbol">ext4</filesystem>
@@ -208,6 +208,7 @@
           <mountby config:type="symbol">device</mountby>
           <partition_id config:type="integer">131</partition_id>
           <partition_nr config:type="integer">1</partition_nr>
+          <fstopt>nodev,noexec,nosuid</fstopt>
           <pool config:type="boolean">false</pool>
           <raid_options/>
           <resize config:type="boolean">false</resize>
@@ -231,7 +232,7 @@
           <size>1G</size>
           <subvolumes config:type="list"/>
         </partition>
-        <partition> <!-- 1.1.16 -->
+        <partition> <!-- 1.1.16, V-77265 -->
           <create config:type="boolean">true</create>
           <crypt_fs config:type="boolean">false</crypt_fs>
           <filesystem config:type="symbol">ext4</filesystem>
@@ -284,7 +285,7 @@
           <size>1G</size>
           <subvolumes config:type="list"/>
         </partition>
-        <partition> <!-- 1.1.12 -->
+        <partition> <!-- 1.1.12, V-77307 -->
           <create config:type="boolean">true</create>
           <crypt_fs config:type="boolean">false</crypt_fs>
           <filesystem config:type="symbol">ext4</filesystem>
@@ -345,7 +346,7 @@
   </partitioning>
   <scripts>
     <post-scripts config:type="list">
-      <script> <!-- 1.1.1.1-1.1.1.8, 1.1.18-1.1.20, 3.5.1-3.5.4 -->
+      <script> <!-- 1.1.1.1-1.1.1.8, 1.1.18-1.1.20, 3.5.1-3.5.4, V-77165 -->
         <filename>modprobe.sh</filename>
         <source>
         <![CDATA[
@@ -372,7 +373,7 @@ EOF
 ]]>
         </source>
       </script>
-      <script> <!-- 1.3.2 -->
+      <script> <!-- 1.3.2, V-77153-77151 -->
         <filename>aide.sh</filename>
         <source>
         <![CDATA[
@@ -381,7 +382,7 @@ echo "0 5 * * * /usr/bin/aide --check" >> /var/spool/cron/tabs/root
 ]]>
         </source>
       </script>
-      <script> <!-- 1.4.1-1.4.2 -->
+      <script> <!-- 1.4.1-1.4.2, V-77143 -->
         <filename>grub.sh</filename>
         <source>
         <![CDATA[
@@ -412,13 +413,16 @@ enforce /etc/apparmor.d/*
         /* this here to fix syntax highlighting */
         </source>
       </script>
-      <script> <!-- 1.7.1.1-1.7.1.6, 1.7.2 -->
+      <script> <!-- 1.7.1.1-1.7.1.6, 1.7.2, V-77439, V-77431, V-77433, V-71953, V-71955, -->
+               <!-- V-71891, V-71893, V-71901, V-71899, V-77053, V-73157, V-73155, V-78997, V-77051, -->
+               <!-- V-77055 -->
         <filename>motd.sh</filename>
         <source>
         <![CDATA[
 cat /dev/null > /etc/motd
 cat /dev/null > /etc/issue.net
 echo 'Authorized uses only. All activity may be monitored and reported.' > /etc/issue
+echo 'Authorized uses only. All activity may be monitored and reported.' > /etc/gdm/banner
 chown root:root /etc/motd
 chown root:root /etc/issue
 chown root:root /etc/issue.net
@@ -438,14 +442,42 @@ cat << EOF > /etc/dconf/db/gdm.d/01-banner-message
 banner-message-enable=true
 banner-message-text='Authorized uses only. All activity may be monitored and reported.'
 EOF
+
+mkdir -p /etc/gdm/
+cat << EOF >> /etc/gdm/custom.conf
+[daemon]
+AutomaticLoginEnable=false
+TimedLoginEnable=false
+EOF
+
+mkdir -p /etc/dconf/db/local.d/locks/
+cat << EOF > /etc/dconf/db/local.d/00-screensaver
+[org/gnome/desktop/screensaver]
+lock-enabled=true
+lock-delay=uint32 5
+idle-activation-enabled=true
+
+[org/gnome/desktop/session]
+idle-delay=uint32 900
+EOF
+
+cat << EOF >/etc/dconf/db/local.d/locks/session
+/org/gnome/desktop/session/idle-delay
+/org/gnome/desktop/screensaver/lock-delay
+/org/gnome/desktop/screensaver/idle-activation-enabled
+EOF
+dconf update
 ]]>
         </source>
       </script>
       <script> <!-- 1.5.1, 1.5.3, 3.1.1, 3.1.2, 3.2.1-3.2.8, 3.3.1-3.3.3 -->
+               <!-- V-77499-77493, V-77489, V-77481, V-81805, V-81803, V-77501, V-77487, V-77485, -->
+               <!-- V-77497, V-77491, V-77495, V-77479, V-77069 -->
         <filename>sysctl.sh</filename>
         <source>
         <![CDATA[
 echo '* hard core 0' >> /etc/security/limits.conf
+echo '* hard maxlogins 10' >> /etc/security/limits.conf
 
 cat << EOF > /etc/sysctl.d/cis.conf
 kernel.randomize_va_space = 2
@@ -454,6 +486,7 @@ net.ipv4.conf.all.send_redirects = 0
 net.ipv4.conf.default.send_redirects = 0
 net.ipv4.conf.lo.send_redirects = 0
 net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
 net.ipv4.conf.default.accept_source_route = 0
 net.ipv6.conf.all.accept_redirects = 0
 net.ipv6.conf.default.accept_redirects = 0
@@ -487,6 +520,7 @@ net.ipv4.tcp_max_orphans = 256
 net.ipv4.conf.all.proxy_arp = 0
 net.ipv4.conf.default.proxy_arp = 0
 net.ipv4.conf.lo.proxy_arp = 0
+kernel.kptr_restrict = 1
 EOF
 ]]>
         </source>
@@ -504,7 +538,7 @@ chmod 644 /etc/hosts.deny
 ]]>
         </source>
       </script>
-      <script> <!-- 2.2.1.3 -->
+      <script> <!-- 2.2.1.3, V-77475 -->
         <filename>chrony.sh</filename>
         <source>
         <![CDATA[
@@ -514,7 +548,7 @@ echo 'bindaddress 127.0.0.1' >> /etc/chrony.conf
 ]]>
         </source>
       </script>
-      <script> <!-- 3.6.2-3.6.5 -->
+      <script> <!-- 3.6.2-3.6.5, V-77435 -->
         <filename>iptables.sh</filename>
         <source>
         <![CDATA[
@@ -546,10 +580,21 @@ chmod 700 /etc/cron.hourly /etc/cron.daily /etc/cron.weekly /etc/cron.monthly /e
         </source>
       </script>
       <script> <!-- 4.1.4-4.1.18 -->
+               <!-- V-77395-77419, V-77401-77409, V-77319-77359, V-77329-77325, V-77355, V-77315-77425 -->
+               <!-- V-77349, V-77343-77347, V-77317, V-77351-77353, V-77357, V-77345, V-77365-77361, -->
+               <!-- V-77383-77381, V-77369, V-77379, V-77373-77375, V-77403, V-77367, V-77391, V-77327, -->
+               <!-- V-77331-77339, V-77337-77333, V-77387-77389 -->
         <filename>audit.sh</filename>
         <source>
         <![CDATA[
 cat << EOF > /etc/audit/rules.d/cis.rules
+-a always,exit -F path=/usr/bin/crontab -F auid>=1000 -F auid!=4294967295 -k privileged-cron
+-a always,exit -F path=/usr/sbin/setsebool -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/bin/su -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/usr/sbin/userhelper -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/usr/sbin/unix_chkpwd -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
 -a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change
 -a always,exit -F arch=b32 -S adjtimex -S settimeofday -S stime -k time-change
 -a always,exit -F arch=b64 -S clock_settime -k time-change
@@ -597,6 +642,37 @@ cat << EOF > /etc/audit/rules.d/cis.rules
 -w /sbin/rmmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
 -a always,exit -F arch=b64 -S init_module -S delete_module -k modules
+-a always,exit -F arch=b64 -S rmdir -F auid>=1000 -F auid!=4294967295 -k delete
+-a always,exit -F arch=b32 -S rmdir -F auid>=1000 -F auid!=4294967295 -k delete
+-a always,exit -F arch=b32 -S open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b32 -S open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F path=/usr/bin/chcon -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/bin/newgrp -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F arch=b32 -S finit_module -k module-change
+-a always,exit -F arch=b64 -S finit_module -k module-change
+-a always,exit -F path=/usr/bin/chsh -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/sbin/semanage -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F arch=b32 -S create_module -k module-change
+-a always,exit -F arch=b64 -S create_module -k module-change
+-w /usr/bin/kmod -p x -F auid!=4294967295 -k module-change
+-a always,exit -F path=/usr/sbin/pam_timestamp_check -F auid>=1000 -F auid!=4294967295 -k privileged-pam
+-a always,exit -F path=/usr/sbin/setfiles -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+-a always,exit -F path=/usr/sbin/postqueue -F auid>=1000 -F auid!=4294967295 -k privileged-postfix
+-a always,exit -F path=/usr/sbin/postdrop -F auid>=1000 -F auid!=4294967295 -k privileged-postfix
+-a always,exit -F path=/usr/bin/umount -F auid>=1000 -F auid!=4294967295 -k privileged-mount
+-a always,exit -F arch=b32 path=/usr/bin/passmass -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-passmass
+-a always,exit -F arch=b64 path=/usr/bin/passmass -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-passmass
+-a always,exit -F -arch=b32 path=/usr/bin/sudoedit -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-sudoedit
+-a always,exit -F -arch=b64 path=/usr/bin/sudoedit -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-sudoedit
+-a always,exit -F -arch=b32 path=/usr/bin/sudo -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-sudo
+-a always,exit -F -arch=b64 path=/usr/bin/sudo -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-sudo
+-a always,exit -F -arch=b32 path=/usr/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-chfn
+-a always,exit -F -arch=b64 path=/usr/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-chfn
+-a always,exit -F arch=32 path=/usr/bin/ssh-agent -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-ssh-agent
+-a always,exit -F arch=64 path=/usr/bin/ssh-agent -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-ssh-agent
 -e 2
 EOF
 ]]>
@@ -612,19 +688,20 @@ chmod 600 /etc/rsyslog.conf /etc/rsyslog.d/cis.conf
 ]]>
         </source>
       </script>
-      <script> <!-- 5.2.1-5.2.15 -->
+      <script> <!-- 5.2.1-5.2.15, V-77451, V-72257, V-72255, V-81801, V-77459-77455, V-77449, -->
+               <!-- V-77445-77443, V-77467-77461, V-77469, V-77471 -->
         <filename>ssh.sh</filename>
         <source>
         <![CDATA[
 cat <<EOF > /etc/ssh/sshd_config
 AddressFamily inet
-ListenAddress 192.168.1.3
+ListenAddress 0.0.0.0
 Protocol 2
 AllowUsers simon
 HostKey /etc/ssh/ssh_host_rsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
-MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-512
-Ciphers aes256-ctr,aes256-gcm@openssh.com
+MACs hmac-sha2-256,hmac-sha2-512
+Ciphers aes256-ctr
 KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521
 SyslogFacility AUTHPRIV
 LogLevel INFO
@@ -637,7 +714,7 @@ HostbasedAuthentication no
 IgnoreRhosts yes
 PasswordAuthentication yes
 ChallengeResponseAuthentication no
-GSSAPIAuthentication yes
+GSSAPIAuthentication no
 GSSAPICleanupCredentials no
 UsePAM yes
 AllowAgentForwarding no
@@ -654,23 +731,37 @@ AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
 AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
 AcceptEnv XMODIFIERS
 Subsystem	sftp	/usr/libexec/openssh/sftp-server
-ClientAliveInterval 300
-ClientAliveCountMax 0
+ClientAliveInterval 600
+ClientAliveCountMax 1
+KerberosAuthentication no
+UsePrivilegeSeparation yes
+Compression no
+IgnoreUserKnownHosts yes
 EOF
 
 chown root:root /etc/ssh/sshd_config
 chmod 600 /etc/ssh/sshd_config
+chown root:root /etc/ssh/ssh_host_*key*
+chmod 640 /etc/ssh/ssh_host_*key*
 ]]>
         </source>
       </script>
-      <script> <!-- 5.3.1, 5.6 -->
+      <script> <!-- 5.3.1, 5.6, V-77089, V-77087, V-77081, V-77123, V-77109, V-77131, V-77105, V-81785, -->
+               <!-- V-81709, V-77185, V-77075, V-77077, V-77071, V-77079, V-77135, V-77135 -->
         <filename>pam.sh</filename>
         <source>
         <![CDATA[
-sed -i 's/^password.*requisite.*pam_cracklib.*$/password requisite pam_cracklib.so try_first_pass retry=3 minlen=14 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1/' /etc/pam.d/common-password
-echo 'auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900' >> /etc/pam.d/common-auth
+sed -i 's/^password.*requisite.*pam_cracklib.*$/password requisite pam_cracklib.so difok=8 try_first_pass retry=3 minlen=15 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1/' /etc/pam.d/common-password
+echo 'auth required pam_tally2.so onerr=fail audit silent deny=3 unlock_time=900' >> /etc/pam.d/common-auth
+echo 'auth required pam_unix.so sha512 try_first_pass' >> /etc/pam.d/common-auth
+echo 'auth required pam_faildelay.so delay=4000000 ' >> /etc/pam.d/common-auth
 echo 'account required pam_tally2.so' >> /etc/pam.d/common-account
 echo 'auth required pam_wheel.so use_uid' >> /etc/pam.d/su
+sed -i 's/nullok//g' /etc/pam.d/system-auth-ac
+sed -i 's/nullok//g' /etc/pam.d/password-auth-ac
+mkdir /etc/sssd/
+echo 'offline_credentials_expiration = 1' > /etc/sssd/sssd.conf
+echo 'session required pam_lastlog.so showfailed ' >> /etc/pam.d/login
 ]]>
         </source>
       </script>
@@ -691,7 +782,7 @@ usermod -s /sbin/nologin uucp
 ]]>
         </source>
       </script>
-      <script> <!-- 5.4.5, 6.2.6 -->
+      <script> <!-- 5.4.5, 6.2.6, V-77063 -->
         <filename>timeout.sh</filename>
         <source>
         <![CDATA[
@@ -730,7 +821,24 @@ usermod -aG wheel simon
 ]]>
         </source>
       </script>
-      <script> <!-- 6.1.2-6.1.9 -->
+      <script> <!-- V-77067 -->
+        <filename>sudoers.sh</filename>
+        <source>
+        <![CDATA[
+sed -i 's/NOPASSWD/PASSWD/' /etc/sudoers
+]]>
+        </source>
+      </script>
+      <script> <!-- V-77061, V-77057 -->
+        <filename>desktop.sh</filename>
+        <source>
+        <![CDATA[
+gsettings set org.gnome.desktop.session idle-delay 900
+gsettings set org.gnome.desktop.lockdown disable-lock-screen false
+]]>
+        </source>
+      </script>
+      <script> <!-- 6.1.2-6.1.9, V-77119, V-77311, V-77275 -->
         <filename>perms.sh</filename>
         <source>
         <![CDATA[
@@ -750,11 +858,28 @@ chown root:root /etc/gshadow
 chown root:root /etc/gshadow-
 chown root:root /etc/group
 chown root:root /etc/group-
+touch /etc/security/opasswd
+chown root:root /etc/security/opasswd
+chmod 0600 /etc/security/opasswd
+
+cat << EOF >> /etc/permissions.local
+/var/log/audit root:root 600
+/var/log/audit/audit.log root:root 600
+/etc/audit/audit.rules root:root 640
+/usr/sbin/audispd root:root 0750
+/usr/sbin/auditctl root:root 0750
+/usr/sbin/auditd root:root 0750
+/usr/sbin/ausearch root:root 0755
+/usr/sbin/aureport root:root 0755
+/usr/sbin/autrace root:root 0750
+/usr/sbin/augenrules root:root 0750
+/var/log/messages root:root 640
+EOF
 ]]>
         </source>
       </script>
-      <script> <!-- 6.2.8-6.2.14 -->
-        <filename>perms.sh</filename>
+      <script> <!-- 6.2.8-6.2.14, V-77139 -->
+        <filename>hosts.sh</filename>
         <source>
         <![CDATA[
 chmod 700 /home/simon
@@ -762,11 +887,34 @@ chown simon:simon /home/simon
 rm /home/simon/.forward
 rm /home/simon/.netrc
 rm /home/simon/.rhosts
+rm /home/simon/.shosts
 cat /dev/null > /etc/hosts.equiv
 chmod 000 /etc/hosts.equiv
 chown root:root /etc/hosts.equiv
+cat /dev/null > /etc/shosts.equiv
+chmod 000 /etc/shosts.equiv
+chown root:root /etc/shosts.equiv
 ]]>
         </source>
+      </script>
+      <script> <!-- V-77199, V-77107, V-77073 -->
+        <filename>logindefs.sh</filename>
+        <source>
+        <![CDATA[
+sed -i 's/^CREATE_HOME.*$/CREATE_HOME yes/' /etc/login.defs
+sed -i 's/^FAIL_DELAY.*$/FAIL_DELAY 4/' /etc/login.defs
+echo 'SHA_CRYPT_MIN_ROUNDS 5000 ' >> /etc/login.defs
+]]>
+        </source>
+      </script>
+      <script> <!-- V-77509, V-77513 -->
+        <filename>pkcs11.sh</filename>
+        <source>
+        <![CDATA[
+mkdir -p /etc/pam_pkcs11/
+echo 'cert_policy = ca,oscp_on,signature,crl_auto;' >> /etc/pam_pkcs11/pam_pkcs11.conf
+]]>
+         </source>
       </script>
     </post-scripts>
   </scripts>
@@ -789,12 +937,12 @@ chown root:root /etc/hosts.equiv
     <net.ipv4.ip_forward>0</net.ipv4.ip_forward>
     <net.ipv4.tcp_syncookies>1</net.ipv4.tcp_syncookies>
     <net.ipv6.conf.all.forwarding>0</net.ipv6.conf.all.forwarding>
-    <pass_max_days>90</pass_max_days> <!-- 5.4.1.1 -->
-    <pass_min_days>7</pass_min_days> <!-- 5.4.1.2 -->
+    <pass_max_days>60</pass_max_days> <!-- 5.4.1.1, V-77117, V-77115 -->
+    <pass_min_days>7</pass_min_days> <!-- 5.4.1.2, V-77111 -->
     <pass_min_len>8</pass_min_len>
     <pass_warn_age>7</pass_warn_age> <!-- 5.4.1.3 -->
-    <passwd_encryption>sha512</passwd_encryption> <!-- 5.3.4 -->
-    <passwd_remember_history>12</passwd_remember_history> <!-- 5.3.3 -->
+    <passwd_encryption>sha512</passwd_encryption> <!-- 5.3.4, V-77099, V-77093 -->
+    <passwd_remember_history>5</passwd_remember_history> <!-- 5.3.3, V-77121 -->
     <passwd_use_cracklib>yes</passwd_use_cracklib>
     <permission_security>secure</permission_security>
     <run_updatedb_as>nobody</run_updatedb_as>
@@ -819,7 +967,7 @@ chown root:root /etc/hosts.equiv
         <service>dbus-org.opensuse.Network.DHCP4</service>
         <service>dbus-org.opensuse.Network.DHCP6</service>
         <service>xdm</service>
-        <service>autofs</service> <!-- 1.1.22 -->
+        <service>autofs</service> <!-- 1.1.22, V-77167 -->
         <service>chargen</service> <!-- 2.1.1 -->
         <service>chargen-udp</service>
         <service>daytime</service> <!-- 2.1.2 -->
@@ -855,11 +1003,13 @@ chown root:root /etc/hosts.equiv
         <service>ypserv</service> <!-- 2.2.16 -->
         <service>atftpd</service> <!-- 2.2.17 -->
         <service>rsyncd</service> <!-- 2.2.18 -->
+        <service>ctrl-alt-del</service> <!-- V-77171 -->
+        <service>kdump</service> <!-- V-77257 -->
         <service>SuSEfirewall2</service>
       </disable>
       <enable config:type="list">
         <service>apparmor</service>
-        <service>auditd</service> <!-- 4.1.2 -->
+        <service>auditd</service> <!-- 4.1.2, V-77289 -->
         <service>btrfsmaintenance-refresh</service>
         <service>cron</service> <!-- 5.1.1 -->
         <service>haveged</service>
@@ -868,7 +1018,7 @@ chown root:root /etc/hosts.equiv
         <service>rollback</service>
         <service>rsyslog</service> <!-- 4.2.1.1 -->
         <service>spice-vdagentd</service>
-        <service>sshd</service>
+        <service>sshd</service> <!-- V-77441 -->
         <service>wicked</service>
         <service>wickedd-auto4</service>
         <service>wickedd-nanny</service>
@@ -895,6 +1045,15 @@ chown root:root /etc/hosts.equiv
       <package>tcpd</package> <!-- 3.4.1 -->
       <package>iptables</package> <!-- 3.6.1 -->
       <package>rsyslog</package> <!-- 4.2.3 -->
+      <package>pam_pkcs11</package> <!-- V-77507 -->
+      <package>mozilla-nss</package>
+      <package>mozilla-nss-tools</package>
+      <package>pcsc-ccid</package>
+      <package>pcsc-lite</package>
+      <package>opensc</package>
+      <package>coolkey</package>
+      <package>audit</package> <!-- V-77287 -->
+      <package>audit-audispd-plugins</package> <!-- V-77301 -->
     </packages>
     <remove-packages config:type="list">
       <package>prelink</package> <!-- 1.5.4 -->
@@ -905,13 +1064,14 @@ chown root:root /etc/hosts.equiv
       <package>rsh</package> <!-- 2.3.2 -->
       <package>talk</package> <!-- 2.3.3 -->
       <package>telnet</package> <!-- 2.3.4 -->
+      <package>telnet-server</package> <!-- V-77429 -->
       <package>openldap2-client</package> <!-- 2.3.5 -->
-      <package>wpa_supplicant</package> <!-- 3.7 -->
+      <package>wpa_supplicant</package> <!-- 3.7, V-77505 -->
       <package>vsftpd</package>  <!-- 2.2.9 -->
     </remove-packages>
   </software>
   <timezone>
-    <hwclock>UTC</hwclock>
+    <hwclock>UTC</hwclock> <!-- V-77477 -->
     <timezone>Europe/London</timezone>
   </timezone>
   <user_defaults>
