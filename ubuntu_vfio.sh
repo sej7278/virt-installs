@@ -7,6 +7,7 @@ virt-install \
 --vcpus 2 \
 --cpu host-passthrough \
 --memory 4096 \
+--features kvm_hidden=on \
 --disk path=~/ubuntu_vfio.qcow2,size=40,format=qcow2,sparse=true,bus=scsi,cache=writethrough,discard=unmap,io=threads  \
 --controller type=scsi,model=virtio-scsi \
 --channel unix,target_type=virtio,name=org.qemu.guest_agent.0 \
