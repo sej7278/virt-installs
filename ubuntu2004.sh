@@ -16,7 +16,6 @@ virt-install \
 --cdrom ~/ubuntu-20.04-desktop-amd64.iso \
 --graphics none \
 --hostdev 02:00.0,address.type=pci,address.multifunction=on \
---hostdev 02:00.1,address.type=pci \
 --hostdev 001.003 \
 --boot loader=/usr/share/OVMF/OVMF_CODE.fd,loader.readonly=yes,loader.type=pflash
 
