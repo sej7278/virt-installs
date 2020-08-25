@@ -3,7 +3,7 @@
 virt-install \
 --virt-type kvm \
 --name=centos8_template \
---os-variant=rhel8.0 \
+--os-variant=centos8 \
 --cpu host-passthrough \
 --vcpus 2 \
 --memory 2048 \
@@ -13,8 +13,8 @@ virt-install \
 --channel unix,target_type=virtio,name=org.qemu.guest_agent.0 \
 --graphics none \
 --video none \
---metadata title="CentOS 8.1 (template)" \
---location ~/CentOS-8.1.1911-x86_64-dvd1.iso \
+--metadata title="CentOS 8.2 (template)" \
+--location ~/CentOS-8.2.2004-x86_64-dvd1.iso \
 --extra-args='console=tty0 console=ttyS0,115200n8 serial'
 
 <<COMMENTS
