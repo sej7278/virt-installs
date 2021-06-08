@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: yes
+  become_method: su
+  tasks:
+    - include: tasks/cis.yml
+  handlers:
+    - name: grub2-mkconfig
+      command: grub2-mkconfig -o /boot/grub2/grub.cfg
+    - name: augenrules
+      command: augenrules
+    - name: dracut
+      command: dracut -f -H --regenerate-all

@@ -1,0 +1,16 @@
+all:
+  hosts:
+    alma8cis:
+      ansible_host: 192.168.1.2
+      ansible_ssh_user: user
+      ansible_ssh_pass: password
+      ansible_become_pass: password
+  vars:
+    grub_password: password
+    ntp_server: uk.pool.ntp.org
+    space_left_action: email
+    admin_space_left_action: halt
+    max_log_file_action: keep_logs
+    audit_backlog_limit: 8192
+    max_log_file_size: 8
+    loghost: 192.168.1.3
