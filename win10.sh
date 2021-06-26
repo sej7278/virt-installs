@@ -18,7 +18,7 @@ virt-install \
 --network bridge=br0,model=virtio \
 --input type=tablet,bus=virtio \
 --metadata title='Win10 (TPM2 and SB)' \
---disk ~/virtio-win-0.1.190.iso,device=cdrom \
+--disk ~/virtio-win-1.9.16.iso,device=cdrom \
 --cdrom ~/Win10_21H1_English_x64.iso \
 --tpm type=emulator,version=2.0,model=tpm-tis \
 --boot loader=/usr/share/OVMF/OVMF_CODE_4M.secboot.fd,loader.readonly=yes,loader.type=pflash,loader.secure=yes,nvram.template=/usr/share/OVMF/OVMF_VARS_4M.ms.fd,menu=on
