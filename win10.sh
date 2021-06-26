@@ -4,9 +4,9 @@ virt-install \
 --virt-type kvm \
 --name=windows10 \
 --os-variant=win10 \
---vcpus 2 \
+--vcpus 4,sockets=1,cores=4,threads=1 \
 --cpu host-passthrough \
---memory 4096 \
+--memory 8192 \
 --features smm.state=on,kvm_hidden=on,hyperv_relaxed=on,hyperv_vapic=on,hyperv_spinlocks=on,hyperv_spinlocks_retries=8191 \
 --clock hypervclock_present=yes \
 --disk path=~/win10.qcow2,size=100,format=qcow2,sparse=true,bus=scsi,cache=writethrough,discard=unmap,io=threads  \
@@ -22,3 +22,23 @@ virt-install \
 --cdrom ~/Win10_21H1_English_x64.iso \
 --tpm type=emulator,version=2.0,model=tpm-tis \
 --boot loader=/usr/share/OVMF/OVMF_CODE_4M.secboot.fd,loader.readonly=yes,loader.type=pflash,loader.secure=yes,nvram.template=/usr/share/OVMF/OVMF_VARS_4M.ms.fd,menu=on
+
+
+<<COMMENTS
+
+virtio-win: https://access.redhat.com/downloads/content/70/ver=/rhel---8.4/8.4/x86_64/packages
+
+to fake your cpu to pass win11 checks:
+
+virsh edit windows10
+
+  <cpu mode="custom" match="exact" check="none">
+    <model fallback="forbid">Skylake-Server</model>
+  </cpu>
+
+this doesn't work for me, but should according to libvirt (version?):
+
+  --cpu model=Skylake-Server,mode=custom,match=exact,fallback=forbid,check=none \
+  
+COMMENTS
+
