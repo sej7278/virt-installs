@@ -66,3 +66,9 @@ SUBSYSTEM=="usb", ATTR{idVendor}=="04f2", ATTR{idProduct}=="0963", MODE="0666"
 SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="00cb", MODE="0666"
 SUBSYSTEM=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="c312", MODE="0666" 
 ```
+
+### To allow a non-root user to reserve more memory for guests, add this to /etc/security/limits.conf (substitute username):
+```
+username soft memlock 20000000
+username hard memlock 20000000
+```
