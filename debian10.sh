@@ -7,16 +7,18 @@ virt-install \
 --vcpus 1 \
 --cpu host-passthrough \
 --ram 2048 \
---disk path=~/debian10.img,format=raw,size=40,sparse=true,bus=scsi,discard=unmap \
+--disk path=~/debian10.qcow2,format=qcow2,size=40,sparse=true,bus=scsi,discard=unmap \
 --controller type=scsi,model=virtio-scsi \
 --graphics spice,gl.enable=no,listen=none \
---video virtio,accel3d=yes \
+--video qxl \
 --soundhw ich6 \
 --input tablet,type=virtio \
 --network bridge=br0,model=virtio \
+--channel unix,target_type=virtio,name=org.qemu.guest_agent.0 \
+--channel spicevmc,target_type=virtio,name=com.redhat.spice.0 \
 --metadata title='Debian Buster' \
 --filesystem type=mount,mode=passthrough,source=/home/simon/mymount,target=mymount \
---cdrom ~/debian-10.2.0-amd64-DVD-1.iso
+--cdrom ~/debian-10.10.0-amd64-DVD-1.iso
 
 
 <<COMMENTS
