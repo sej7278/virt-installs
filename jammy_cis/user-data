@@ -1,0 +1,69 @@
+#cloud-config
+autoinstall:
+  identity:
+    hostname: jammycis
+    password: $6$k5m7jjweO0vODaoj$9CBX9jkEtGeCdqtA22XBRNkoPA0OHhRkqpCzxDs/mHgblY2b6mSEAD9gbS5lbCZ/LBAaXZWg31CyoMt0opP7c/
+    realname: user
+    username: user
+  drivers:
+    install: false
+  keyboard:
+    layout: gb
+    toggle: null
+    variant: ''
+  locale: en_GB.UTF-8
+  timezone: Europe/London
+  ssh:
+    allow-pw: true
+    authorized-keys: []
+    install-server: true
+  network:
+    ethernets:
+      enp1s0:
+        addresses:
+        - 192.168.1.5/24
+        gateway4: 192.168.1.1
+        nameservers:
+          addresses:
+          - 8.8.8.8
+          search: []
+    version: 2
+  storage:
+    config:
+    - { ptable: gpt, path: /dev/sda, wipe: superblock, preserve: false, name: '', grub_device: false, type: disk, id: disk-sda } # gpt partition table
+
+    - { device: disk-sda, size: 512M, wipe: superblock, flag: boot, number: 1, preserve: false, grub_device: true, type: partition, id: partition-0 } # 512mb efi
+    - { fstype: fat32, volume: partition-0, preserve: false, type: format, id: format-0 }
+    - { path: /boot/efi, device: format-0, type: mount, id: mount-0 }
+
+    - { device: disk-sda, size: 1G, wipe: superblock, flag: '', number: 2, preserve: false, grub_device: false, type: partition, id: partition-1 } # 1gb /boot
+    - { fstype: ext4, volume: partition-1, preserve: false, type: format, id: format-1 }
+    - { path: /boot, device: format-1, type: mount, id: mount-1 }
+
+    - { device: disk-sda, size: -1, wipe: superblock, flag: '', number: 3, preserve: false, grub_device: false, type: partition, id: partition-2 } # lvm vg
+    - { name: vg0, devices: [ partition-2 ], preserve: false, type: lvm_volgroup, id: lvm_volgroup-0 }
+
+    - { name: root, volgroup: lvm_volgroup-0, size: 22G, wipe: superblock, preserve: false, type: lvm_partition, id: lvm_partition-0 } # 22gb /root
+    - { fstype: ext4, volume: lvm_partition-0, preserve: false, type: format, id: format-2 }
+    - { path: /, device: format-2, type: mount, id: mount-2 }
+
+    - { name: var, volgroup: lvm_volgroup-0, size: 12G, wipe: superblock, preserve: false, type: lvm_partition, id: lvm_partition-1 } # 12gb /var
+    - { fstype: ext4, volume: lvm_partition-1, preserve: false, type: format, id: format-3 }
+    - { path: /var, device: format-3, type: mount, id: mount-3 }
+
+    - { name: log, volgroup: lvm_volgroup-0, size: 4G, wipe: superblock, preserve: false, type: lvm_partition, id: lvm_partition-2 } # 4gb /var/log
+    - { fstype: ext4, volume: lvm_partition-2, preserve: false, type: format, id: format-4 }
+    - { path: /var/log, device: format-4, type: mount, id: mount-4 }
+
+    - { name: audit, volgroup: lvm_volgroup-0, size: 4G, wipe: superblock, preserve: false, type: lvm_partition, id: lvm_partition-3 } # 4gb /var/log/audit
+    - { fstype: ext4, volume: lvm_partition-3, preserve: false, type: format, id: format-5 }
+    - { path: /var/log/audit, device: format-5, type: mount, id: mount-5 }
+    
+    - { name: vartmp, volgroup: lvm_volgroup-0, size: 4G, wipe: superblock, preserve: false, type: lvm_partition, id: lvm_partition-4 } # 4gb /var/tmp
+    - { fstype: ext4, volume: lvm_partition-4, preserve: false, type: format, id: format-6 }
+    - { path: /var/tmp, device: format-6, type: mount, id: mount-6 }
+
+    - { name: home, volgroup: lvm_volgroup-0, size: 2G, wipe: superblock, preserve: false, type: lvm_partition, id: lvm_partition-5 } # 2gb /home
+    - { fstype: ext4, volume: lvm_partition-5, preserve: false, type: format, id: format-7 }
+    - { path: /home, device: format-7, type: mount, id: mount-7 }
+  version: 1
