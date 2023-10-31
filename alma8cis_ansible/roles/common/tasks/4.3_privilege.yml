@@ -1,0 +1,89 @@
+---
+- name: 4.3.1 Ensure sudo is installed
+  ansible.builtin.dnf:
+    name: sudo
+    state: present
+  tags:
+    - sudo
+    - dnf
+
+- name: Configure sudoers
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: "^#includedir /etc/sudoers.d$"
+    line: "#includedir /etc/sudoers.d"
+  tags: sudo
+
+# 4.3.6 Ensure sudo authentication timeout is configured correctly
+- name: 4.3.2 Ensure sudo commands use pty
+  ansible.builtin.copy:
+    src: files/sudoers
+    dest: /etc/sudoers.d/01_cis
+    owner: root
+    group: root
+    mode: "440"
+  tags: sudo
+
+- name: 4.3.3 Ensure sudo log file exists
+  ansible.builtin.file:
+    path: /var/log/sudo.log
+    owner: root
+    group: root
+    mode: "600"
+    state: touch
+    modification_time: preserve
+    access_time: preserve
+  tags: sudo
+
+- name: Find sudo configs
+  ansible.builtin.find:
+    paths: /etc/sudoers.d
+  register: sudoers
+  tags: sudo
+
+- name: 4.3.4 Ensure users must provide password for escalation
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: "^.*NOPASSWD.*$"
+    state: absent
+  with_items: "{{ sudoers.files }}"
+  tags: sudo
+
+- name: Remove NOPASSWD from sudoers
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: "^.*NOPASSWD.*$"
+    state: absent
+  tags: sudo
+
+- name: 4.3.5 Ensure re-authentication for privilege escalation is not disabled globally
+  ansible.builtin.lineinfile:
+    path: "{{ item.path }}"
+    regexp: "^.*!authenticate.*$"
+    state: absent
+  with_items: "{{ sudoers.files }}"
+  tags: sudo
+
+- name: Remove !authenticate from sudoers
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: "^.*!authenticate.*$"
+    state: absent
+  tags: sudo
+
+# no user must be in sugroup
+- name: 4.3.7 Ensure access to the su command is restricted
+  ansible.builtin.group:
+    name: sugroup
+    state: present
+  tags: sudo
+
+- name: 4.3.7 Ensure access to the su command is restricted (pam)
+  ansible.builtin.copy:
+    src: files/pam/su
+    dest: /etc/pam.d/su
+    owner: root
+    group: root
+    mode: "644"
+  tags: sudo

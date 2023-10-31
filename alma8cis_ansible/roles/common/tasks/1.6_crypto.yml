@@ -1,0 +1,16 @@
+---
+# 1.6.3 Ensure system wide crypto policy disables cbc for ssh
+# 1.6.4 Ensure system wide crypto policy disables macs less than 128 bits
+- name: 1.6.2 Ensure system wide crypto policy disables sha1 hash and signature support
+  ansible.builtin.copy:
+    src: files/CIS.pmod
+    dest: /etc/crypto-policies/policies/modules/CIS.pmod
+    owner: root
+    group: root
+    mode: "644"
+  tags: crypto
+
+- name: 1.6.1 Ensure system wide crypto policy is not set to legacy
+  ansible.builtin.command: update-crypto-policies --set DEFAULT:CIS
+  changed_when: false
+  tags: crypto

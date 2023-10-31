@@ -1,0 +1,207 @@
+---
+- name: 2.2.1 Ensure autofs services are not in use
+  ansible.builtin.dnf:
+    name: autofs
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.2 Ensure avahi daemon services are not in use
+  ansible.builtin.dnf:
+    name:
+      - avahi-daemon
+      - avahi
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.3 Ensure dhcp server services are not in use
+  ansible.builtin.dnf:
+    name: dhcp-server
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.4 Ensure dns server services are not in use
+  ansible.builtin.dnf:
+    name: bind
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.5 Ensure dnsmasq services are not in use
+  ansible.builtin.dnf:
+    name: dnsmasq
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.6 Ensure file server services are not in use
+  ansible.builtin.dnf:
+    name: samba
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.7 Ensure ftp server services are not in use
+  ansible.builtin.dnf:
+    name: vsftpd
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.8 Ensure message access server services are not in use
+  ansible.builtin.dnf:
+    name:
+      - dovecot
+      - cyrus-imapd
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.9 Ensure network file system services are not in use
+  ansible.builtin.dnf:
+    name: nfs-utils
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.10 Ensure nis server services are not in use
+  ansible.builtin.dnf:
+    name: ypserv
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.11 Ensure print server services are not in use
+  ansible.builtin.dnf:
+    name: cups
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.12 Ensure rpcbind services are not in use
+  ansible.builtin.dnf:
+    name: rpcbind
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.13 Ensure rsync services are not in use
+  ansible.builtin.dnf:
+    name: rsync-daemon
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+# required on s390x
+- name: 2.2.14 Ensure snmp services are not in use
+  ansible.builtin.dnf:
+    name: net-snmp
+    state: absent
+    autoremove: true
+  when: ansible_architecture != "s390x"
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.15 Ensure telnet server services are not in use
+  ansible.builtin.dnf:
+    name: telnet-server
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.16 Ensure tftp server services are not in use
+  ansible.builtin.dnf:
+    name: tftp-server
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.17 Ensure web proxy server services are not in use
+  ansible.builtin.dnf:
+    name: squid
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.18 Ensure web server services are not in use
+  ansible.builtin.dnf:
+    name:
+      - httpd
+      - nginx
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.19 Ensure xinetd services are not in use
+  ansible.builtin.dnf:
+    name: xinetd
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.20 Ensure X window server services are not in use
+  ansible.builtin.dnf:
+    name: xorg-x11-server-common
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+- name: 2.2.21 Ensure mail transfer agents are configured for local-only mode
+  ansible.builtin.dnf:
+    name: postfix
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf
+
+# vnext
+- name: Remove openldap-servers
+  ansible.builtin.dnf:
+    name: openldap-servers
+    state: absent
+    autoremove: true
+  tags:
+    - servers
+    - dnf

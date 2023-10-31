@@ -1,0 +1,122 @@
+---
+- name: 4.5.1.1 Ensure strong password hashing algorithm is configured
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: "^ENCRYPT_METHOD.*$"
+    line: "ENCRYPT_METHOD SHA512"
+    state: present
+  tags: users
+
+- name: 4.5.1.2 Ensure password expiration is 365 days or less
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    state: present
+    regexp: "^PASS_MAX_DAYS.*$"
+    line: "PASS_MAX_DAYS 30"
+  tags: users
+
+- name: 4.5.1.3 Ensure password expiration warning days is 7 or more
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    state: present
+    regexp: "^PASS_WARN_AGE.*$"
+    line: "PASS_WARN_AGE 7"
+  tags: users
+
+- name: 4.5.1.4 Ensure inactive password lock is 30 days or less
+  ansible.builtin.lineinfile:
+    path: /etc/default/useradd
+    state: present
+    regexp: "^INACTIVE.*$"
+    line: "INACTIVE=30"
+  tags: users
+
+- name: 4.5.1.5 Ensure all users last password change date is in the past (user)
+  ansible.builtin.command: chage -d {{ ansible_date_time.date }} --maxdays 30 --mindays 1 {{ ansible_ssh_user }}
+  changed_when: false
+  tags: users
+
+# 4.5.2.4 Ensure root password is set
+- name: 4.5.1.5 Ensure all users last password change date is in the past (root)
+  ansible.builtin.command: chage -d {{ ansible_date_time.date }} --maxdays 30 --mindays 1 root
+  changed_when: false
+  tags: users
+
+- name: 4.5.2.1 Ensure default group for the root account is GID 0
+  ansible.builtin.command: usermod -g 0 root
+  changed_when: false
+  tags: users
+
+- name: 4.5.2.2 Ensure root user umask is configured (bashrc)
+  ansible.builtin.replace:
+    path: /root/.bashrc
+    regexp: 'umask\s+[0-9]+'
+    replace: "umask 027"
+  tags: users
+
+- name: 4.5.2.2 Ensure root user umask is configured (profile)
+  ansible.builtin.replace:
+    path: /root/.bash_profile
+    regexp: 'umask\s+[0-9]+'
+    replace: "umask 027"
+  tags: users
+
+- name: System accounts check
+  ansible.builtin.command: awk -F':' '($3<1000 && $1!="root" && $1!="sync" && $1!="halt" && $1!="shutdown" && $1!="nfsnobody" && $7!="/sbin/nologin") { print $1 }' /etc/passwd  # noqa yaml[line-length]
+  register: system_uids
+  changed_when: false
+  check_mode: false
+  tags: profile
+
+- name: 4.5.2.3 Ensure system accounts are secured
+  ansible.builtin.user:
+    name: "{{ item }}"
+    shell: /sbin/nologin
+  loop: "{{ system_uids.stdout_lines }}"
+  tags: profile
+
+- name: 4.5.3.1 Ensure nologin is not listed in /etc/shells
+  ansible.builtin.lineinfile:
+    path: /etc/shells
+    regexp: "^.*/sbin/nologin$"
+    state: absent
+  tags: users
+
+- name: 4.5.3.2 Ensure default user shell timeout is configured (bash)
+  ansible.builtin.copy:
+    src: files/profile/profile.sh
+    dest: /etc/profile.d/cis.sh
+    owner: root
+    group: root
+    mode: "644"
+  tags: users
+
+- name: 4.5.3.2 Ensure default user shell timeout is configured (csh)
+  ansible.builtin.copy:
+    src: files/profile/profile.csh
+    dest: /etc/profile.d/cis.csh
+    owner: root
+    group: root
+    mode: "644"
+  tags: users
+
+- name: 4.5.3.3 Ensure default user umask is configured (bashrc)
+  ansible.builtin.replace:
+    path: /etc/bashrc
+    regexp: 'umask\s+[0-9]+'
+    replace: "umask 027"
+  tags: users
+
+- name: 4.5.3.3 Ensure default user umask is configured (profile)
+  ansible.builtin.replace:
+    path: /etc/profile
+    regexp: 'umask\s+[0-9]+'
+    replace: "umask 027"
+  tags: users
+
+- name: 4.5.3.3 Ensure default user umask is configured (login.defs)
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: 'UMASK\s+[0-9]+'
+    line: "UMASK 027"
+  tags: users

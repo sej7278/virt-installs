@@ -1,0 +1,95 @@
+---
+- name: 5.1.1.1 Ensure rsyslog is installed
+  ansible.builtin.dnf:
+    name: rsyslog
+    state: present
+  tags:
+    - logging
+    - dnf
+
+- name: 5.1.1.2 Ensure rsyslog service is enabled
+  ansible.builtin.systemd:
+    name: rsyslog
+    enabled: true
+  tags: logging
+
+- name: 5.1.1.3 Ensure journald is configured to send logs to rsyslog
+  community.general.ini_file:
+    path: /etc/systemd/journald.conf
+    section: Journal
+    option: ForwardToSyslog
+    value: "yes"
+    state: present
+    no_extra_spaces: true
+    mode: "644"
+  tags:
+    - logging
+    - systemd
+
+# 5.1.4 Ensure all logfiles have appropriate access configured
+- name: 5.1.1.4 Ensure rsyslog default file permissions are configured
+  ansible.builtin.copy:
+    src: files/rsyslog
+    dest: /etc/rsyslog.d/cis.conf
+    mode: "600"
+    owner: root
+    group: root
+  tags: logging
+
+- name: 5.1.1.7 Ensure rsyslog is not configured to receive logs from a remote client
+  ansible.builtin.lineinfile:
+    path: /etc/rsyslog.conf
+    regexp: "^.*(InputTCPServerRun|imtcp).*$"
+    state: absent
+  tags: logging
+
+- name: 5.1.2.1.4 Ensure journald is not configured to receive logs from a remote client
+  ansible.builtin.dnf:
+    name: systemd-journal-remote
+    state: absent
+    autoremove: true
+  tags:
+    - logging
+    - dnf
+    - systemd
+
+- name: 5.1.2.2 Ensure journald service is enabled
+  ansible.builtin.systemd:
+    name: systemd-journald
+    enabled: true
+  tags: logging
+
+- name: 5.1.2.3 Ensure journald is configured to compress large log files
+  community.general.ini_file:
+    path: /etc/systemd/journald.conf
+    section: Journal
+    option: Compress
+    value: "yes"
+    state: present
+    no_extra_spaces: true
+    mode: "644"
+  tags:
+    - logging
+    - systemd
+
+- name: 5.1.2.4 Ensure journald is configured to write logfiles to persistent disk
+  community.general.ini_file:
+    path: /etc/systemd/journald.conf
+    section: Journal
+    option: Storage
+    value: persistent
+    state: present
+    no_extra_spaces: true
+    mode: "644"
+  tags:
+    - logging
+    - systemd
+
+- name: 5.1.3 Ensure logrotate is configured
+  ansible.builtin.copy:
+    src: files/logrotate
+    dest: /etc/logrotate.d/cis
+    mode: "644"
+    owner: root
+    group: root
+  tags: logging

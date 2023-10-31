@@ -1,0 +1,69 @@
+---
+- name: 1.4.1 Ensure address space layout randomization (ASLR) is enabled
+  ansible.builtin.copy:
+    src: files/sysctl/60-aslr.conf
+    dest: /etc/sysctl.d/60-aslr.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - hardening
+    - sysctl
+
+- name: 1.4.2 Ensure ptrace_scope is restricted
+  ansible.builtin.copy:
+    src: files/sysctl/60-kernel_sysctl.conf
+    dest: /etc/sysctl.d/60-kernel_sysctl.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - hardening
+    - sysctl
+
+- name: 1.4.3 Ensure core dump backtraces are disabled
+  community.general.ini_file:
+    path: /etc/systemd/coredump.conf
+    section: Coredump
+    option: ProcessSizeMax
+    value: 0
+    state: present
+    no_extra_spaces: true
+    mode: "644"
+  tags:
+    - hardening
+    - systemd
+
+- name: 1.4.4 Ensure core dump storage is disabled
+  community.general.ini_file:
+    path: /etc/systemd/coredump.conf
+    section: Coredump
+    option: Storage
+    value: none
+    state: present
+    no_extra_spaces: true
+    mode: "644"
+  tags:
+    - hardening
+    - systemd
+
+# stig
+- name: Limit coredumps (limits)
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.conf
+    state: present
+    regexp: '^.*hard\s+core.*$'
+    line: "* hard core 0"
+  tags: hardening
+
+# stig
+- name: Limit coredumps (sysctl)
+  ansible.builtin.copy:
+    src: files/sysctl/60_suid_dumpable.conf
+    dest: /etc/sysctl.d/60_suid_dumpable.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - hardening
+    - sysctl

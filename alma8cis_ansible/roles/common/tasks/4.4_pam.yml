@@ -1,0 +1,118 @@
+---
+- name: 4.4.1.1 Ensure latest version of pam is installed
+  ansible.builtin.dnf:
+    name: pam
+    state: present
+  tags: pam
+
+- name: 4.4.1.2 Ensure latest version of authselect is installed
+  ansible.builtin.dnf:
+    name: authselect
+    state: present
+  tags: pam
+
+# run this even in check mode to register the variable
+- name: authselect list check
+  ansible.builtin.command: authselect list
+  register: authselect_list
+  changed_when: false
+  check_mode: false
+  tags: pam
+
+# skip if already created as will error otherwise
+- name: Create custom authselect profile
+  ansible.builtin.command: authselect create-profile cis -b sssd --symlink-meta
+  when: '"custom/cis" not in authselect_list.stdout'
+  changed_when: true
+  tags: pam
+
+# run this even in check mode to register the variable
+- name: authselect current check
+  ansible.builtin.command: authselect current
+  register: authselect_current
+  changed_when: false
+  check_mode: false
+  ignore_errors: true
+  tags: pam
+
+# 4.4.2.2 Ensure pam_faillock module is enabled
+- name: 4.4.2.1 Ensure active authselect profile includes pam modules
+  ansible.builtin.command: authselect select custom/cis without-nullok with-faillock with-pamaccess with-sudo --force
+  when: '"custom/cis" not in authselect_current.stdout'
+  changed_when: true
+  tags: pam
+
+# 4.4.3.1.1 Ensure password failed attempts lockout is configured
+# 4.4.3.1.2 Ensure password unlock time is configured
+# 4.4.3.1.3 Ensure password failed attempts lockout includes root account
+- name: 4.4.2.2 Ensure pam_faillock module is enabled
+  ansible.builtin.copy:
+    src: files/pam/faillock.conf
+    dest: /etc/security/faillock.conf
+    owner: root
+    group: root
+    mode: "644"
+  tags: pam
+
+# 4.4.3.2.1 Ensure password number of changed characters is configured
+# 4.4.3.2.2 Ensure password length is configured
+# 4.4.3.2.3 Ensure password complexity is configured
+# 4.4.3.2.4 Ensure password same consecutive characters is configured
+# 4.4.3.2.5 Ensure password maximum sequential characters is configured
+# 4.4.3.2.6 Ensure password dictionary check is enabled
+# 4.4.3.2.7 Ensure password quality is enforced for the root user
+# 4.4.2.3 Ensure pam_pwquality module is enabled
+- name: 4.4.3.2 Configure pam_pwquality module
+  ansible.builtin.copy:
+    src: files/pam/pwquality.conf
+    dest: /etc/security/pwquality.conf
+    owner: root
+    group: root
+    mode: "644"
+  tags: pam
+
+# 4.4.3.4.1 Ensure pam_unix does not include nullok
+# 4.4.3.4.2 Ensure pam_unix does not include remember
+- name: 4.4.2.5 Ensure pam_unix module is enabled (password)
+  ansible.builtin.copy:
+    src: files/pam/password-auth
+    dest: /etc/authselect/custom/cis/password-auth
+    owner: root
+    group: root
+    mode: "644"
+  tags: pam
+
+- name: 4.4.2.5 Ensure pam_unix module is enabled (system)
+  ansible.builtin.copy:
+    src: files/pam/password-auth
+    dest: /etc/authselect/custom/cis/system-auth
+    owner: root
+    group: root
+    mode: "644"
+  tags: pam
+
+# 4.4.3.3.2 Ensure password history is enforced for the root user4
+# 4.4.3.3.1 Ensure password history remember is configured
+# 4.4.3.3.2 Ensure password history is enforced for the root user
+# 4.4.3.3.3 Ensure pam_pwhistory includes use_authtok
+# 4.4.2.4 Ensure pam_pwhistory module is enabled
+- name: .4.2.4 Ensure pam_pwhistory module is enabled
+  ansible.builtin.copy:
+    src: files/pam/pwhistory.conf
+    dest: /etc/security/pwhistory.conf
+    owner: root
+    group: root
+    mode: "644"
+  tags: pam
+
+# 4.4.3.4.4 Ensure pam_unix includes use_authtok
+# 4.4.2.5 Ensure pam_unix module is enabled
+- name: 4.4.3.4.3 Ensure pam_unix includes a strong password hashing algorithm
+  community.general.ini_file:
+    path: /etc/libuser.conf
+    section: defaults
+    option: crypt_style
+    value: sha512
+    state: present
+    mode: "644"
+  tags: pam

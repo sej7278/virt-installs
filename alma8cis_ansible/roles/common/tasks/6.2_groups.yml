@@ -1,0 +1,28 @@
+---
+- name: 6.2.8 Ensure root PATH Integrity
+  ansible.builtin.lineinfile:
+    path: /root/.bashrc
+    regexp: "^.*PATH=.*$"
+    line: "PATH=$PATH"
+  tags: groups
+
+- name: 6.2.10 Ensure local interactive user home directories are configured (root)
+  ansible.builtin.file:
+    path: /root
+    owner: root
+    group: root
+    mode: "700"
+  tags: groups
+
+- name: 6.2.10 Ensure local interactive user home directories are configured (user)
+  ansible.builtin.file:
+    path: /home/{{ ansible_ssh_user }}
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: "700"
+  tags: groups
+
+- name: 6.2.11 Ensure local interactive user dot files access is configured
+  ansible.builtin.command: find / -type f \( -name .forward -o -name .netrc -o -name .rhosts \) -exec rm {} \;
+  changed_when: false
+  tags: groups

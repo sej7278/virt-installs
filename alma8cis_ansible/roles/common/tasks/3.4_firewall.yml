@@ -1,0 +1,51 @@
+---
+# 3.4.2.1 Ensure nftables base chains exist
+# 3.4.2.2 Ensure host based firewall loopback traffic is configured
+# 3.4.2.4 Ensure nftables established connections are configured
+# 3.4.2.5 Ensure nftables default deny firewall policy
+- name: Configure nftables rules
+  ansible.builtin.copy:
+    src: files/nftables/cis.nft
+    dest: /etc/nftables/cis.nft
+    owner: root
+    group: root
+    mode: "600"
+  tags: firewall
+
+- name: 3.4.2 Configure firewall rules
+  ansible.builtin.copy:
+    src: files/nftables/nftables.conf
+    dest: /etc/sysconfig/nftables.conf
+    mode: "600"
+    owner: root
+    group: root
+  tags: firewall
+
+- name: 3.4.1.1 Ensure nftables is installed
+  ansible.builtin.dnf:
+    name: nftables
+    state: present
+  tags: firewall
+
+# can't remove as it will autoremove nftables
+- name: 3.4.1.2 Ensure a single firewall configuration utility is in use
+  ansible.builtin.systemd:
+    name: firewalld
+    masked: true
+  tags: firewall
+
+# extra
+- name: Remove iptables-services
+  ansible.builtin.dnf:
+    name: iptables-services
+    state: absent
+    autoremove: true
+  tags:
+    - firewall
+    - dnf
+
+- name: Enable nftables service
+  ansible.builtin.systemd:
+    name: nftables
+    enabled: true
+  tags: firewall

@@ -1,0 +1,44 @@
+---
+- name: 3.2.1 Ensure dccp kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/dccp.conf
+    dest: /etc/modprobe.d/dccp.conf
+    owner: root
+    group: root
+    mode: "600"
+  tags:
+    - protocols
+    - modprobe
+
+- name: 3.2.2 Ensure tipc kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/tipc.conf
+    dest: /etc/modprobe.d/tipc.conf
+    owner: root
+    group: root
+    mode: "600"
+  tags:
+    - protocols
+    - modprobe
+
+- name: 3.2.3 Ensure rds kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/rds.conf
+    dest: /etc/modprobe.d/rds.conf
+    owner: root
+    group: root
+    mode: "600"
+  tags:
+    - protocols
+    - modprobe
+
+- name: 3.2.4 Ensure sctp kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/sctp.conf
+    dest: /etc/modprobe.d/sctp.conf
+    owner: root
+    group: root
+    mode: "600"
+  tags:
+    - protocols
+    - modprobe

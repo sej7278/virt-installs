@@ -1,0 +1,62 @@
+# required as ipv6 is disabled
+AddressFamily inet
+ListenAddress 0.0.0.0
+
+# 4.2.4
+AllowGroups staff
+
+# 4.2.6 Ensure sshd Ciphers are configured
+Ciphers -3des-cbc,aes128-cbc,aes192-cbc,aes256-cbc,rijndael-cbc@lysator.liu.se
+
+# 4.2.11 Ensure sshd KexAlgorithms is configured
+KexAlgorithms -diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1
+
+# 4.2.14 Ensure sshd MACs are configured
+MACs -hmac-md5,hmac-md5-96,hmac-ripemd160,hmac-sha1-96,umac-64@openssh.com,hmac-md5-etm@openssh.com,hmac-md5-96-etm@openssh.com,hmac-ripemd160-etm@openssh.com,hmac-sha1-96-etm@openssh.com,umac-64-etm@openssh.com
+
+# 4.2.13
+LogLevel INFO
+
+# 4.2.21
+UsePAM yes
+
+# 4.2.19
+PermitRootLogin no
+
+# 4.2.9
+HostbasedAuthentication no
+
+# 4.2.18
+PermitEmptyPasswords no
+
+# 4.2.20
+PermitUserEnvironment no
+
+# 4.2.10
+IgnoreRhosts yes
+
+# 4.2.8
+DisableForwarding yes
+
+# 4.2.5
+Banner /etc/issue.net
+
+# 4.2.15
+MaxAuthTries 4
+
+# 4.2.17
+MaxStartups 10:30:60
+
+# 4.2.16
+MaxSessions 10
+
+# 4.2.12
+LoginGraceTime 60
+
+# 4.2.7
+ClientAliveInterval 15
+ClientAliveCountMax 3
+
+# defaults
+Subsystem sftp /usr/libexec/openssh/sftp-server
+AuthorizedKeysFile .ssh/authorized_keys

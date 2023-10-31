@@ -1,0 +1,9 @@
+---
+- name: All hosts
+  hosts: all
+  become: true
+  become_method: ansible.builtin.sudo
+  roles:
+    - common
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/sbin"

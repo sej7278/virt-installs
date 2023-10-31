@@ -1,0 +1,48 @@
+---
+- name: 5.3.1 Ensure AIDE is installed
+  ansible.builtin.dnf:
+    name: aide
+    state: present
+  tags:
+    - dnf
+    - aide
+
+- name: Initialise AIDE
+  ansible.builtin.command: aide --init
+  args:
+    creates: /var/lib/aide/aide.db.*
+  tags: aide
+
+- name: Backup AIDE
+  ansible.builtin.command: mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+  args:
+    creates: /var/lib/aide/aide.db.gz
+  tags: aide
+
+- name: 5.3.2 Ensure filesystem integrity is regularly checked
+  ansible.builtin.cron:
+    name: "aide"
+    minute: "0"
+    hour: "5"
+    job: "/usr/sbin/aide --check"
+  tags:
+    - aide
+    - cron
+
+- name: Create /etc/aide.conf.d
+  ansible.builtin.file:
+    dest: /etc/aide.conf.d/
+    mode: "700"
+    owner: root
+    group: root
+    state: directory
+  tags: aide
+
+- name: 5.3.3 Ensure cryptographic mechanisms are used to protect the integrity of audit tools
+  ansible.builtin.copy:
+    src: files/aide_audit.conf
+    dest: /etc/aide.conf.d/aide_audit.conf
+    mode: "600"
+    owner: root
+    group: root
+  tags: aide

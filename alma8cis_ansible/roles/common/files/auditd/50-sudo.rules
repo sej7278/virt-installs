@@ -1,0 +1,1 @@
+-w /var/log/sudo.log -p wa -k sudo_log_file

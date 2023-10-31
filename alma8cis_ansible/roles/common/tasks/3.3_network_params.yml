@@ -1,0 +1,121 @@
+---
+- name: 3.3.1 Ensure ip forwarding is disabled
+  ansible.builtin.copy:
+    src: files/sysctl/60-ip_forward.conf
+    dest: /etc/sysctl.d/60-ip_forward.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.2 Ensure packet redirect sending is disabled
+  ansible.builtin.copy:
+    src: files/sysctl/60-send_redirects.conf
+    dest: /etc/sysctl.d/60-send_redirects.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.3 Ensure bogus icmp responses are ignored
+  ansible.builtin.copy:
+    src: files/sysctl/60-icmp_ignore_bogus_error_responses.conf
+    dest: /etc/sysctl.d/60-icmp_ignore_bogus_error_responses.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.4 Ensure broadcast icmp requests are ignored
+  ansible.builtin.copy:
+    src: files/sysctl/60-icmp_echo_ignore_broadcasts.conf
+    dest: /etc/sysctl.d/60-icmp_echo_ignore_broadcasts.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.5 Ensure icmp redirects are not accepted
+  ansible.builtin.copy:
+    src: files/sysctl/60-accept_redirects.conf
+    dest: /etc/sysctl.d/60-accept_redirects.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.6 Ensure secure icmp redirects are not accepted
+  ansible.builtin.copy:
+    src: files/sysctl/60-secure_redirects.conf
+    dest: /etc/sysctl.d/60-secure_redirects.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.7 Ensure reverse path filtering is enabled
+  ansible.builtin.copy:
+    src: files/sysctl/60-rp_filter.conf
+    dest: /etc/sysctl.d/60-rp_filter.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.8 Ensure source routed packets are not accepted
+  ansible.builtin.copy:
+    src: files/sysctl/60-accept_source_route.conf
+    dest: /etc/sysctl.d/60-accept_source_route.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.9 Ensure suspicious packets are logged
+  ansible.builtin.copy:
+    src: files/sysctl/60-log_martians.conf
+    dest: /etc/sysctl.d/60-log_martians.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.10 Ensure tcp syn cookies is enabled
+  ansible.builtin.copy:
+    src: files/sysctl/60-tcp_syncookies.conf
+    dest: /etc/sysctl.d/60-tcp_syncookies.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl
+
+- name: 3.3.11 Ensure ipv6 router advertisements are not accepted
+  ansible.builtin.copy:
+    src: files/sysctl/60-accept_ra.conf
+    dest: /etc/sysctl.d/60-accept_ra.conf
+    mode: "644"
+    owner: root
+    group: root
+  tags:
+    - params
+    - sysctl

@@ -1,0 +1,63 @@
+---
+- name: 1.2.5 Ensure updates, patches, and additional security software are installed
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  tags: dnf
+
+- name: Find repo files
+  ansible.builtin.find:
+    paths: /etc/yum.repos.d
+    patterns: "*.repo"
+  register: repofiles
+  tags:
+    - gpg
+    - dnf
+
+- name: 1.2.2 Ensure gpgcheck is globally activated
+  community.general.ini_file:
+    path: /etc/dnf/dnf.conf
+    section: main
+    option: gpgcheck
+    value: 1
+    state: present
+    no_extra_spaces: true
+    mode: "644"
+  tags:
+    - gpg
+    - dnf
+
+- name: Enable gpgcheck in yum.repos.d
+  ansible.builtin.replace:
+    path: "{{ item.path }}"
+    regexp: "^gpgcheck.*$"
+    replace: "gpgcheck=1"
+    mode: "644"
+  with_items: "{{ repofiles.files }}"
+  tags:
+    - gpg
+    - dnf
+
+# do not enable for rhel
+- name: 1.2.3 Ensure repo_gpgcheck is globally activated
+  community.general.ini_file:
+    path: /etc/dnf/dnf.conf
+    section: main
+    option: repo_gpgcheck
+    value: 1
+    state: present
+    no_extra_spaces: true
+    mode: "644"
+  tags:
+    - gpg
+    - dnf
+
+- name: Don't disable repo_gpgcheck in yum.repos.d
+  ansible.builtin.replace:
+    path: "{{ item.path }}"
+    regexp: '^repo_gpgcheck\s*=\s*0$'
+    replace: "repo_gpgcheck=1"
+  with_items: "{{ repofiles.files }}"
+  tags:
+    - gpg
+    - dnf

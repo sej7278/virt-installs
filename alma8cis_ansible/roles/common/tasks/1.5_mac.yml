@@ -1,0 +1,39 @@
+---
+- name: 1.5.1.1 Ensure SELinux is installed
+  ansible.builtin.dnf:
+    name: libselinux
+    state: present
+  tags:
+    - dnf
+    - selinux
+
+# 1.5.1.4 Ensure the SELinux mode is not disabled
+- name: 1.5.1.2 Ensure SELinux is not disabled in bootloader configuration
+  ansible.builtin.command: grubby --update-kernel=ALL --args="selinux=1 enforcing=1"
+  changed_when: false
+  tags: selinux
+
+# 1.5.1.5 Ensure the SELinux mode is enforcing
+- name: 1.5.1.3 Ensure SELinux policy is configured
+  ansible.posix.selinux:
+    policy: targeted
+    state: enforcing
+  tags: selinux
+
+- name: 1.5.1.7 Ensure the MCS Translation Service (mcstrans) is not installed
+  ansible.builtin.dnf:
+    name: mcstrans
+    state: absent
+    autoremove: true
+  tags:
+    - dnf
+    - selinux
+
+- name: 1.5.1.8 Ensure SETroubleshoot is not installed
+  ansible.builtin.dnf:
+    name: setroubleshoot
+    state: absent
+    autoremove: true
+  tags:
+    - dnf
+    - selinux

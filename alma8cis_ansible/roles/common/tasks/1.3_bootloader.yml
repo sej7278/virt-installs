@@ -1,0 +1,45 @@
+---
+- name: 1.3.1 Ensure bootloader password is set
+  ansible.builtin.expect:
+    command: grub2-setpassword
+    responses:
+      Enter password: "{{ grub_password }}"
+      Confirm password: "{{ grub_password }}"
+    creates: /boot/efi/EFI/almalinux/user.cfg
+  notify: grub2-mkconfig
+  no_log: true
+  tags: grub
+
+- name: 1.3.2 Ensure permissions on bootloader config are configured
+  ansible.builtin.file:
+    path: /boot/efi/EFI/almalinux/grub.cfg
+    owner: root
+    group: root
+    mode: "600"
+  tags: grub
+
+- name: grubenv permissions
+  ansible.builtin.file:
+    path: /boot/efi/EFI/almalinux/grubenv
+    owner: root
+    group: root
+    mode: "600"
+  tags: grub
+
+- name: user.cfg permissions
+  ansible.builtin.file:
+    path: /boot/efi/EFI/almalinux/user.cfg
+    owner: root
+    group: root
+    mode: "600"
+  tags: grub
+
+# extra
+- name: grub timeout
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: "^GRUB_TIMEOUT="
+    line: "GRUB_TIMEOUT=1"
+    state: present
+  notify: grub2-mkconfig
+  tags: grub

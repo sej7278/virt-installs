@@ -1,0 +1,73 @@
+---
+- name: 4.2.1 Ensure permissions on /etc/ssh/sshd_config are configured
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "600"
+  tags: ssh
+
+- name: Find ssh private host keys
+  ansible.builtin.find:
+    paths: /etc/ssh
+    patterns: "ssh_host_*_key"
+  register: hostkeys_priv
+  tags: ssh
+
+- name: 4.2.2 Ensure permissions on SSH private host key files are configured
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: ssh_keys
+    mode: "640"
+  with_items: "{{ hostkeys_priv.files }}"
+  tags: ssh
+
+- name: Find ssh public host keys
+  ansible.builtin.find:
+    paths: /etc/ssh
+    patterns: "ssh_host_*_key.pub"
+  register: hostkeys_pub
+  tags: ssh
+
+- name: 4.2.3 Ensure permissions on SSH public host key files are configured
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "644"
+  with_items: "{{ hostkeys_pub.files }}"
+  tags: ssh
+
+# 4.2.5 Ensure sshd Banner is configured
+# 4.2.6 Ensure sshd Ciphers are configured
+# 4.2.7 Ensure sshd ClientAliveInterval and ClientAliveCountMax are configured
+# 4.2.8 Ensure sshd DisableForwarding is enabled
+# 4.2.9 Ensure sshd HostbasedAuthentication is disabled
+# 4.2.10 Ensure sshd IgnoreRhosts is enabled
+# 4.2.11 Ensure sshd KexAlgorithms is configured
+# 4.2.12 Ensure sshd LoginGraceTime is configured
+# 4.2.13 Ensure sshd LogLevel is configured
+# 4.2.14 Ensure sshd MACs are configured
+# 4.2.15 Ensure sshd MaxAuthTries is configured
+# 4.2.16 Ensure sshd MaxSessions is configured
+# 4.2.17 Ensure sshd MaxStartups is configured
+# 4.2.18 Ensure sshd PermitEmptyPasswords is disabled
+# 4.2.19 Ensure sshd PermitRootLogin is disabled
+# 4.2.20 Ensure sshd PermitUserEnvironment is disabled
+# 4.2.21 Ensure sshd UsePAM is enabled
+- name: 4.2.4 Ensure sshd access is configured
+  ansible.builtin.copy:
+    src: files/sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "600"
+  tags: ssh
+
+- name: 4.2.22 Ensure sshd crypto_policy is not set
+  ansible.builtin.lineinfile:
+    path: /etc/sysconfig/sshd
+    regexp: "^CRYPTO_POLICY.*$"
+    state: absent
+  tags: ssh

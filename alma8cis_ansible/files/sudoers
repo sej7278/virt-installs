@@ -1,2 +1,0 @@
-Defaults use_pty
-Defaults logfile="/var/log/sudo.log"
