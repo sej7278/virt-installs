@@ -1,0 +1,96 @@
+---
+# SRG-OS-000023-GPOS-00006 (banner)
+# SRG-OS-000032-GPOS-00013 (loglevel)
+# SRG-OS-000105-GPOS-00052 (pubkey auth)
+# SRG-OS-000106-GPOS-00053 (password auth)
+# SRG-OS-000108-GPOS-00055
+# SRG-OS-000109-GPOS-00056 (root login)
+# SRG-OS-000125-GPOS-00065 (pam)
+# SRG-OS-000395-GPOS-00175 (client alive)
+# SRG-OS-000126-GPOS-00066
+# SRG-OS-000163-GPOS-00072
+# SRG-OS-000279-GPOS-00109
+# SRG-OS-000250-GPOS-00093 (crypto-policies)
+# SRG-OS-000425-GPOS-00189 (environment)
+# SRG-OS-000480-GPOS-00227 (hostbased auth, compression, rhosts etc.)
+# SRG-OS-000364-GPOS-00151 (kerberos, gssapi)
+# SRG-OS-000033-GPOS-00014 (rekeylimit)
+- name: Configure SSH server
+  ansible.builtin.template:
+    src: templates/sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0600"
+    backup: "{{ create_backups }}"
+  tags: ssh
+
+- name: Find SSH private host keys
+  ansible.builtin.find:
+    paths: /etc/ssh
+    patterns: "ssh_host_*_key"
+  register: hostkeys_priv
+  changed_when: false
+  tags: [ssh, perms]
+
+- name: Configure SSH private host key permissions
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: ssh_keys
+    mode: "0640"
+  with_items: "{{ hostkeys_priv.files }}"
+  tags: [ssh, perms]
+
+- name: Find SSH public host keys
+  ansible.builtin.find:
+    paths: /etc/ssh
+    patterns: "ssh_host_*_key.pub"
+  register: hostkeys_pub
+  changed_when: false
+  tags: [ssh, perms]
+
+- name: Configure SSH public host key permissions
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  with_items: "{{ hostkeys_pub.files }}"
+  tags: [ssh, perms]
+
+- name: Configure SSH server ciphers
+  ansible.builtin.lineinfile:
+    path: /etc/crypto-policies/back-ends/opensshserver.config
+    regexp: '^Ciphers .*$'
+    line: Ciphers aes256-gcm@openssh.com,aes256-ctr,aes128-gcm@openssh.com,aes128-ctr
+    state: present
+    backup: "{{ create_backups }}"
+  tags: [fips, ssh, crypto]
+
+- name: Configure SSH server MACs
+  ansible.builtin.lineinfile:
+    path: /etc/crypto-policies/back-ends/opensshserver.config
+    regexp: '^MACs .*$'
+    line: MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-512
+    state: present
+    backup: "{{ create_backups }}"
+  tags: [fips, ssh, crypto]
+
+- name: Configure SSH client ciphers
+  ansible.builtin.lineinfile:
+    path: /etc/crypto-policies/back-ends/openssh.config
+    regexp: '^Ciphers .*$'
+    line: Ciphers aes256-gcm@openssh.com,aes256-ctr,aes128-gcm@openssh.com,aes128-ctr
+    state: present
+    backup: "{{ create_backups }}"
+  tags: [fips, ssh, crypto]
+
+- name: Configure SSH client MACs
+  ansible.builtin.lineinfile:
+    path: /etc/crypto-policies/back-ends/openssh.config
+    regexp: '^MACs .*$'
+    line: MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-512
+    state: present
+    backup: "{{ create_backups }}"
+  tags: [fips, ssh, crypto]

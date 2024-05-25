@@ -1,0 +1,271 @@
+---
+# SRG-OS-000477-GPOS-00222 (usbguard audit)
+- name: Configure USBGuard audit backend
+  ansible.builtin.lineinfile:
+    path: /etc/usbguard/usbguard-daemon.conf
+    regexp: "^AuditBackend=.*$"
+    line: AuditBackend=LinuxAudit
+    state: present
+    backup: "{{ create_backups }}"
+  tags: [usbguard, auditd]
+
+# SRG-OS-000479-GPOS-00224 (auditd offloading)
+- name: Configure auditd offloading
+  ansible.builtin.lineinfile:
+    path: /etc/audit/plugins.d/syslog.conf
+    regexp: "^active\\s*=.*$"
+    line: active = yes
+    state: present
+    backup: "{{ create_backups }}"
+  tags: [rsyslog, auditd]
+
+# SRG-OS-000046-GPOS-00022 (mail account)
+# SRG-OS-000047-GPOS-00023 (disk error/full, log size/number etc.)
+# SRG-OS-000051-GPOS-00024 (freq, write)
+# SRG-OS-000062-GPOS-00031 (local events)
+# SRG-OS-000255-GPOS-00096 (format)
+# SRG-OS-000057-GPOS-00027 (group)
+# SRG-OS-000059-GPOS-00029
+# SRG-OS-000343-GPOS-00134 (space left)
+# SRG-OS-000063-GPOS-00032 (permissions)
+- name: Configure auditd.conf
+  ansible.builtin.template:
+    src: templates/auditd.conf.j2
+    dest: /etc/audit/auditd.conf
+    owner: root
+    group: root
+    mode: "0640"
+    backup: "{{ create_backups }}"
+  tags: auditd
+
+# SRG-OS-000256-GPOS-00097 (tools owner/perms/group)
+# SRG-OS-000258-GPOS-00099
+- name: Configure audit tool permissions
+  ansible.builtin.file:
+    owner: root
+    group: root
+    mode: "0755"
+    path: "{{ item }}"
+  with_items:
+    - /sbin/auditctl
+    - /sbin/auditd
+    - /sbin/augenrules
+    - /sbin/aureport
+    - /sbin/ausearch
+    - /sbin/rsyslogd
+  tags: [auditd, perms]
+
+- name: Configure autrace permissions
+  ansible.builtin.file:
+    owner: root
+    group: root
+    mode: "0750"
+    path: /sbin/autrace
+  tags: [auditd, perms]
+
+# SRG-OS-000057-GPOS-00027
+# SRG-OS-000059-GPOS-00029
+- name: Configure audit log directory permissions
+  ansible.builtin.file:
+    path: /var/log/audit/
+    owner: root
+    group: root
+    mode: "0700"
+  tags: [auditd, perms]
+
+- name: Find audit logs
+  ansible.builtin.find:
+    paths: /var/log/audit
+    file_type: file
+  register: audit_logs
+  tags: [auditd, perms]
+
+- name: Configure audit log file permissions
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    owner: root
+    group: root
+    mode: "u-x,g-rwx,o-rwx"
+  with_items: "{{ audit_logs.files }}"
+  tags: [auditd, perms]
+
+# SRG-OS-000046-GPOS-00022 (alias)
+- name: Configure root email alias
+  ansible.builtin.lineinfile:
+    path: /etc/aliases
+    regexp: "^root:\\s+{{ root_alias }}$"
+    line: "root: {{ root_alias }}"
+    state: present
+    backup: "{{ create_backups }}"
+  notify: newaliases
+  tags: [auditd, postfix]
+
+# SRG-OS-000047-GPOS-00023 (failure)
+# SRG-OS-000058-GPOS-00028 (immutable)
+- name: Configure auditd default rules
+  ansible.builtin.template:
+    src: templates/audit.rules.j2
+    dest: /etc/audit/rules.d/audit.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd
+
+# SRG-OS-000037-GPOS-00015 (open)
+# SRG-OS-000042-GPOS-00020
+# SRG-OS-000062-GPOS-00031
+# SRG-OS-000392-GPOS-00172
+# SRG-OS-000462-GPOS-00206
+# SRG-OS-000471-GPOS-00215
+# SRG-OS-000064-GPOS-00033
+# SRG-OS-000458-GPOS-00203
+# SRG-OS-000461-GPOS-00205
+- name: Configure auditd access rules
+  ansible.builtin.copy:
+    src: files/50-access.rules
+    dest: /etc/audit/rules.d/50-access.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd
+
+# SRG-OS-000037-GPOS-00015 (unlink)
+# SRG-OS-000042-GPOS-00020
+# SRG-OS-000062-GPOS-00031
+# SRG-OS-000392-GPOS-00172
+# SRG-OS-000462-GPOS-00206
+# SRG-OS-000471-GPOS-00215
+# SRG-OS-000466-GPOS-00210
+# SRG-OS-000467-GPOS-00211
+# SRG-OS-000468-GPOS-00212
+- name: Configure auditd delete rules
+  ansible.builtin.copy:
+    src: files/50-delete.rules
+    dest: /etc/audit/rules.d/50-delete.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd
+
+# SRG-OS-000004-GPOS-00004 (shadow)
+# SRG-OS-000037-GPOS-00015
+# SRG-OS-000042-GPOS-00020
+# SRG-OS-000062-GPOS-00031
+# SRG-OS-000304-GPOS-00121
+# SRG-OS-000392-GPOS-00172
+# SRG-OS-000462-GPOS-00206
+# SRG-OS-000470-GPOS-00214
+# SRG-OS-000471-GPOS-00215
+# SRG-OS-000239-GPOS-00089
+# SRG-OS-000240-GPOS-00090
+# SRG-OS-000241-GPOS-00091
+# SRG-OS-000303-GPOS-00120
+# SRG-OS-000466-GPOS-00210
+# SRG-OS-000476-GPOS-00221
+- name: Configure auditd identity rules
+  ansible.builtin.copy:
+    src: files/50-identity.rules
+    dest: /etc/audit/rules.d/50-identity.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd
+
+# SRG-OS-000037-GPOS-00015 (kmod)
+# SRG-OS-000042-GPOS-00020
+# SRG-OS-000062-GPOS-00031
+# SRG-OS-000392-GPOS-00172
+# SRG-OS-000462-GPOS-00206
+# SRG-OS-000471-GPOS-00215
+# SRG-OS-000471-GPOS-00216
+# SRG-OS-000477-GPOS-00222
+- name: Configure auditd module rules
+  ansible.builtin.copy:
+    src: files/50-modules.rules
+    dest: /etc/audit/rules.d/50-modules.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd
+
+# SRG-OS-000477-GPOS-00222 (fallock)
+# SRG-OS-000476-GPOS-00221
+# SRG-OS-000475-GPOS-00220
+# SRG-OS-000037-GPOS-00015 (lastlog)
+# SRG-OS-000042-GPOS-00020
+# SRG-OS-000062-GPOS-00031
+# SRG-OS-000392-GPOS-00172
+# SRG-OS-000462-GPOS-00206
+# SRG-OS-000471-GPOS-00215
+# SRG-OS-000473-GPOS-00218 (tallylog)
+# SRG-OS-000470-GPOS-00214
+- name: Configure auditd login rules
+  ansible.builtin.copy:
+    src: files/50-login.rules
+    dest: /etc/audit/rules.d/50-login.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd
+
+# SRG-OS-000037-GPOS-00015 (su, sudo, umount etc.)
+# SRG-OS-000042-GPOS-00020
+# SRG-OS-000062-GPOS-00031
+# SRG-OS-000064-GPOS-00033
+# SRG-OS-000392-GPOS-00172
+# SRG-OS-000462-GPOS-00206
+# SRG-OS-000471-GPOS-00215
+# SRG-OS-000466-GPOS-00210
+# SRG-OS-000327-GPOS-00127 (execve)
+# SRG-OS-000326-GPOS-00126
+# SRG-OS-000477-GPOS-00222 (init)
+# SRG-OS-000471-GPOS-00215 (chage, chsh, crontab etc.)
+# SRG-OS-000463-GPOS-00207 (semanage, setfiles, setsebool etc.)
+# SRG-OS-000465-GPOS-00209
+- name: Configure auditd privileged rules
+  ansible.builtin.copy:
+    src: files/50-privileged.rules
+    dest: /etc/audit/rules.d/50-privileged.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd
+
+# SRG-OS-000037-GPOS-00015 (chmod, chacl, setfacl etc.)
+# SRG-OS-000042-GPOS-00020
+# SRG-OS-000062-GPOS-00031
+# SRG-OS-000392-GPOS-00172
+# SRG-OS-000462-GPOS-00206
+# SRG-OS-000471-GPOS-00215
+# SRG-OS-000064-GPOS-00033
+# SRG-OS-000466-GPOS-00210
+# SRG-OS-000458-GPOS-00203
+# SRG-OS-000463-GPOS-00207 (xattr)
+# SRG-OS-000474-GPOS-00219
+- name: Configure auditd permissions rules
+  ansible.builtin.copy:
+    src: files/50-permissions.rules
+    dest: /etc/audit/rules.d/50-permissions.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd
+
+# SRG-OS-000058-GPOS-00028 (immutable)
+- name: Configure auditd final rules
+  ansible.builtin.copy:
+    src: files/99-finalize.rules
+    dest: /etc/audit/rules.d/99-finalize.rules
+    mode: "0600"
+    owner: root
+    group: root
+  notify: augenrules
+  tags: auditd

@@ -1,0 +1,16 @@
+server {{ ntp_server1 }} iburst maxpoll 16
+server {{ ntp_server2 }} iburst maxpoll 16
+server t iburst maxpoll 16
+bindaddress 127.0.0.1
+port 0
+cmdport 0
+
+# defaults
+sourcedir /run/chrony-dhcp
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+keyfile /etc/chrony.keys
+ntsdumpdir /var/lib/chrony
+leapsectz right/UTC
+logdir /var/log/chrony

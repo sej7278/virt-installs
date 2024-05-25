@@ -1,0 +1,27 @@
+---
+# SRG-OS-000095-GPOS-00049 (modprobe)
+- name: Configure kernel modules
+  ansible.builtin.copy:
+    src: files/modprobe.conf
+    dest: /etc/modprobe.d/stig.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: kernel
+
+# SRG-OS-000132-GPOS-00067 (dmesg, perf, kptr, bpf etc.)
+# SRG-OS-000138-GPOS-00069
+# SRG-OS-000420-GPOS-00186 (syncookies)
+# SRG-OS-000142-GPOS-00071
+# SRG-OS-000324-GPOS-00125 (links)
+# SRG-OS-000366-GPOS-00153 (kexec)
+# SRG-OS-000433-GPOS-00193 (aslr)
+# SRG-OS-000480-GPOS-00227 (coredumps, namespaces, bpf etc.)
+- name: Configure sysctl
+  ansible.builtin.copy:
+    src: files/sysctl.conf
+    dest: /etc/sysctl.d/60-stig.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: kernel

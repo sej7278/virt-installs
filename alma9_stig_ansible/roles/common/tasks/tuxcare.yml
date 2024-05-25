@@ -1,0 +1,24 @@
+---
+- name: Import TuxCare GPG key
+  ansible.builtin.rpm_key:
+    key: https://repo.tuxcare.com/tuxcare/RPM-GPG-KEY-TuxCare
+    fingerprint: FAD7 8590 81D0 738B 7A82  8496 D07B F2A0 8D50 EB66
+  tags: [dnf, tuxcare]
+
+- name: Install tuxcare-release
+  ansible.builtin.dnf:
+    name: https://repo.tuxcare.com/tuxcare/tuxcare-release-latest-9.x86_64.rpm
+    state: present
+  tags: [dnf, tuxcare]
+
+- name: Register using tuxctl
+  ansible.builtin.command: tuxctl --fips -l {{ esu_key }}
+  args:
+    creates: /etc/dnf/vars/tuxcare_token
+  tags: tuxcare
+
+- name: Check tuxcare_token
+  ansible.builtin.stat:
+    path: /etc/dnf/vars/tuxcare_token
+  register: tuxcare_token
+  tags: [dnf, tuxcare]

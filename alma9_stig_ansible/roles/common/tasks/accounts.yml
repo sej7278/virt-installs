@@ -1,0 +1,275 @@
+---
+# SRG-OS-000329-GPOS-00128 (faillock dir)
+- name: Create /var/log/faillock
+  ansible.builtin.file:
+    path: /var/log/faillock
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [pam, users]
+
+- name: Check /var/log/faillock SELinux context
+  ansible.builtin.lineinfile:
+    path: /etc/selinux/targeted/contexts/files/file_contexts.local
+    regexp: "^/var/log/faillock.*"
+    state: absent
+  check_mode: true
+  register: faillock_context
+  changed_when: false
+  tags: [pam, users, selinux]
+
+- name: Configure /var/log/faillock SELinux context
+  ansible.builtin.command: semanage fcontext -a -t faillog_t "/var/log/faillock(/.*)?"
+  changed_when: false
+  when: not faillock_context.found
+  tags: [pam, users, selinux]
+
+- name: Update /var/log/faillock SELinux context
+  ansible.builtin.command: restorecon -RFv /var/log/faillock
+  changed_when: false
+  tags: [pam, users, selinux]
+
+# SRG-OS-000021-GPOS-00005 (fallock)
+- name: Configure faillock.conf
+  ansible.builtin.template:
+    src: templates/faillock.conf.j2
+    dest: /etc/security/faillock.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: [pam, users]
+
+# SRG-OS-000073-GPOS-00041 (pam)
+# SRG-OS-000069-GPOS-00037
+# SRG-OS-000077-GPOS-00045
+- name: Configure pam password-auth
+  ansible.builtin.template:
+    src: templates/password-auth.j2
+    dest: /etc/pam.d/password-auth
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: [pam, users]
+
+- name: Configure pam system-auth
+  ansible.builtin.template:
+    src: templates/password-auth.j2
+    dest: /etc/pam.d/system-auth
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: [pam, users]
+
+# SRG-OS-000480-GPOS-00228 (umask)
+- name: Configure pam postlogin
+  ansible.builtin.template:
+    src: templates/postlogin.j2
+    dest: /etc/pam.d/postlogin
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: [pam, umask]
+
+- name: Configure default umask
+  ansible.builtin.replace:
+    path: "{{ item }}"
+    regexp: 'umask 0[0-9]+'
+    replace: "umask {{ umask }}"
+    backup: "{{ create_backups }}"
+  with_items:
+    - /etc/bashrc
+    - /etc/csh.cshrc
+  tags: umask
+
+# SRG-OS-000480-GPOS-00227 (coredumps)
+- name: Configure pam limits
+  ansible.builtin.copy:
+    src: files/limits.conf
+    dest: /etc/security/limits.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: [pam, users, coredumps]
+
+- name: Configure pam pwquality
+  ansible.builtin.template:
+    src: templates/pwquality.conf.j2
+    dest: /etc/security/pwquality.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: pam
+
+# SRG-OS-000480-GPOS-00228 (login.defs)
+# SRG-OS-000480-GPOS-00226
+# SRG-OS-000480-GPOS-00230
+- name: Configure shadow params
+  ansible.builtin.template:
+    src: templates/login.defs.j2
+    dest: /etc/login.defs
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: users
+
+- name: Configure password hashing
+  community.general.ini_file:
+    path: /etc/libuser.conf
+    section: defaults
+    option: crypt_style
+    value: sha512
+    state: present
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: users
+
+# SRG-OS-000118-GPOS-00060 (inactive)
+- name: Configure inactivity lock
+  ansible.builtin.lineinfile:
+    path: /etc/default/useradd
+    regexp: '^INACTIVE=.*'
+    line: "INACTIVE={{ useradd_inactive }}"
+    state: present
+    backup: "{{ create_backups }}"
+  tags: users
+
+- name: Query passwd database
+  ansible.builtin.getent:
+    database: passwd
+  tags: users
+
+- name: Query shadow database
+  ansible.builtin.getent:
+    database: shadow
+  tags: users
+
+- name: Create a list of interactive users
+  ansible.builtin.set_fact:
+    interactive_users: "{{ (interactive_users | default([])) | union([item]) }}"
+  when: >
+    "/nologin" not in getent_passwd[item][5] and
+    "/shutdown" not in getent_passwd[item][5] and
+    "/sync" not in getent_passwd[item][5] and
+    "/halt" not in getent_passwd[item][5]
+  with_items: "{{ getent_passwd }}"
+  tags: users
+
+# SRG-OS-000073-GPOS-00041 (sha512)
+# SRG-OS-000480-GPOS-00227 (null passwords)
+- name: Lock interactive accounts without a sha512 password
+  ansible.builtin.user:
+    name: "{{ item }}"
+    password_lock: true
+    shell: /sbin/nologin
+  with_items: "{{ interactive_users }}"
+  when: '"$6$" not in getent_shadow[item][0]'
+  tags: users
+
+# SRG-OS-000075-GPOS-00043 (mindays)
+- name: Configure a 1 day minimum password change period
+  ansible.builtin.user:
+    name: "{{ item }}"
+    password_expire_min: 1
+  with_items: "{{ interactive_users }}"
+  tags: users
+
+# SRG-OS-000076-GPOS-00044 (maxdays)
+- name: Configure a 60 day maximum password change period
+  ansible.builtin.user:
+    name: "{{ item }}"
+    password_expire_max: 60
+  with_items: "{{ interactive_users }}"
+  tags: users
+
+# SRG-OS-000480-GPOS-00230 (home exists, primary group etc.)
+- name: Configure home directories
+  ansible.builtin.user:
+    name: "{{ item }}"
+    create_home: true
+  with_items: "{{ interactive_users }}"
+  tags: users
+
+- name: Configure home directory groups
+  ansible.builtin.file:
+    path: "{{ getent_passwd[item][4] }}"
+    group: "{{ getent_passwd[item][2] }}"
+  with_items: "{{ interactive_users }}"
+  tags: users
+
+# SRG-OS-000104-GPOS-00051 (duplicate uid/gid, invalid etc.)
+- name: Find duplicate UID's
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      cut -f3 -d":" /etc/passwd | uniq -d
+  changed_when: false
+  register: dupe_uids
+  tags: users
+
+- name: List duplicate UID's
+  ansible.builtin.debug:
+    msg: "{{ dupe_uids.stdout_lines }}"
+  when: dupe_uids.stdout_lines | length > 0
+  tags: users
+
+- name: Find duplicate GID's
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      cut -f3 -d":" /etc/group | uniq -d
+  changed_when: false
+  register: dupe_gids
+  tags: users
+
+- name: List duplicate GID's
+  ansible.builtin.debug:
+    msg: "{{ dupe_gids.stdout_lines }}"
+  when: dupe_gids.stdout_lines | length > 0
+  tags: users
+
+# SRG-OS-000480-GPOS-00230 (home)
+- name: Find users with invalid group/home
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      pwck -r /etc/passwd | grep -v 'no changes'
+  changed_when: false
+  failed_when: false
+  register: invalid_gids
+  tags: users
+
+- name: List users with invalid group/home
+  ansible.builtin.debug:
+    msg: "{{ invalid_gids.stdout_lines }}"
+  when: invalid_gids.stdout_lines | length > 0
+  tags: users
+
+# SRG-OS-000480-GPOS-00227 (one root)
+- name: Ensure root is uid=0,gid=0
+  ansible.builtin.user:
+    name: root
+    uid: 0
+    group: root
+  tags: users
+
+- name: Find non-root UID=0 accounts
+  ansible.builtin.shell: "awk -F: '$3 == 0 && $1 != \"root\" { print $1 }' /etc/passwd"
+  register: uid_zero_users
+  changed_when: false
+  tags: users
+
+- name: Remove non-root UID=0 accounts
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: absent
+    force: true
+  with_items: "{{ uid_zero_users.stdout_lines }}"
+  tags: users

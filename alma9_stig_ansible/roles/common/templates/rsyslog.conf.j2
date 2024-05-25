@@ -1,0 +1,17 @@
+# defaults
+global(workDirectory="/var/lib/rsyslog")
+module(load="builtin:omfile" Template="RSYSLOG_TraditionalFileFormat")
+include(file="/etc/rsyslog.d/*.conf" mode="optional")
+*.info;mail.none;authpriv.none;cron.none                /var/log/messages
+mail.*                                                  -/var/log/maillog
+*.emerg                                                 :omusrmsg:*
+uucp,news.crit                                          /var/log/spooler
+local7.*                                                /var/log/boot.log
+
+# stig changes
+auth.*;authpriv.*;daemon.* /var/log/secure
+cron.* /var/log/cron
+*.* @@{{ loghost }}
+$ActionSendStreamDriverAuthMode x509/name
+$ActionSendStreamDriverMode 1
+$DefaultNetstreamDriver gtls

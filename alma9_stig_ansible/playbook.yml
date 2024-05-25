@@ -1,0 +1,6 @@
+---
+- name: All hosts
+  hosts: all
+  become: true
+  roles:
+    - common

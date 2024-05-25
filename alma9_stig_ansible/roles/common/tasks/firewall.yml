@@ -1,0 +1,69 @@
+---
+# SRG-OS-000096-GPOS-00050 (firewalld rules)
+# SRG-OS-000297-GPOS-00115
+# SRG-OS-000480-GPOS-00227 (firewalld deny)
+- name: Set default firewalld zone
+  ansible.builtin.command: firewall-cmd --set-default-zone=public
+  register: default_zone
+  changed_when: '"ZONE_ALREADY_SET" not in default_zone.stderr'
+  notify: firewall-reload
+  tags: firewall
+
+- name: Change firewalld interface
+  ansible.posix.firewalld:
+    zone: public
+    interface: "{{ ansible_default_ipv4.interface }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  notify: firewall-reload
+  tags: firewall
+
+- name: Add SSH service to firewalld
+  ansible.posix.firewalld:
+    zone: public
+    service: ssh
+    state: enabled
+    permanent: true
+    immediate: true
+  notify: firewall-reload
+  tags: firewall
+
+- name: Remove cockpit service from firewalld
+  ansible.posix.firewalld:
+    zone: public
+    service: cockpit
+    state: disabled
+    permanent: true
+  notify: firewall-reload
+  tags: firewall
+
+- name: Remove dhcpv6-client service from firewalld
+  ansible.posix.firewalld:
+    zone: public
+    service: dhcpv6-client
+    state: disabled
+    permanent: true
+  notify: firewall-reload
+  tags: firewall
+
+- name: Set firewalld target
+  ansible.posix.firewalld:
+    zone: public
+    target: DROP
+    state: present
+    permanent: true
+  notify: firewall-reload
+  tags: firewall
+
+# SRG-OS-000420-GPOS-00186 (firewalld backend)
+- name: Configure firewalld.conf
+  ansible.builtin.copy:
+    src: files/firewalld.conf
+    dest: /etc/firewalld/firewalld.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  notify: firewall-reload
+  tags: firewall

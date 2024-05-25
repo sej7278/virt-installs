@@ -1,0 +1,105 @@
+---
+# SRG-OS-000445-GPOS-00199 (selinux enforcing)
+- name: Configure SELinux
+  ansible.posix.selinux:
+    policy: targeted
+    state: enforcing
+  tags: [misc, selinux]
+
+# SRG-OS-000107-GPOS-00054 (cac driver)
+# SRG-OS-000108-GPOS-00055
+# SRG-OS-000112-GPOS-00057
+# SRG-OS-000113-GPOS-00058
+# SRG-OS-000374-GPOS-00159 (caching)
+- name: Configure OpenSC
+  ansible.builtin.copy:
+    src: files/opensc.conf
+    dest: /etc/opensc.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: smartcards
+
+# SRG-OS-000378-GPOS-00163 (usbguard rules)
+- name: Configure USBGuard rules
+  ansible.builtin.shell:
+    cmd: usbguard generate-policy --no-hashes > /etc/usbguard/rules.conf
+    creates: /etc/usbguard/rules.conf
+  tags: usbguard
+
+# SRG-OS-000481-GPOS-00481 (disable wifi)
+# SRG-OS-000299-GPOS-00117
+# SRG-OS-000300-GPOS-00118
+- name: Disable wireless interfaces
+  ansible.builtin.command: nmcli radio all off
+  changed_when: false
+  tags: nmcli
+
+# SRG-OS-000480-GPOS-00227 (promiscuous mode)
+- name: Find active network interfaces
+  ansible.builtin.command: nmcli -g name conn show --active
+  register: active_interfaces
+  changed_when: false
+  tags: nmcli
+
+- name: Disable promiscuous mode
+  ansible.builtin.command: "nmcli conn modify {{ item }} 802-3-ethernet.accept-all-mac-addresses false"
+  with_items: "{{ active_interfaces.stdout_lines }}"
+  when: 'not item == "lo"'
+  changed_when: false
+  tags: nmcli
+
+# SRG-OS-000480-GPOS-00227 (dns)
+- name: Configure NetworkManager DNS mode
+  community.general.ini_file:
+    path: /etc/NetworkManager/NetworkManager.conf
+    section: main
+    option: dns
+    value: none
+    state: present
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: nmcli
+
+- name: Configure nameservers
+  ansible.builtin.template:
+    src: templates/resolv.conf.j2
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags: nmcli
+
+- name: Remove shosts.equiv
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /.shosts.equiv
+    - /.shosts
+    - /etc/hosts.equiv
+  tags: misc
+
+# SRG-OS-000032-GPOS-00013 (auth logging)
+# SRG-OS-000479-GPOS-00224 (auth, encrypt, cron etc.)
+- name: Configure rsyslog
+  ansible.builtin.template:
+    src: templates/rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+    mode: "0644"
+    owner: root
+    group: root
+    backup: "{{ create_backups }}"
+  tags: rsyslog
+
+# SRG-OS-000480-GPOS-00227 (mail relay)
+- name: Configure postfix
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^smtpd_client_restrictions.*$'
+    line: smtpd_client_restrictions = permit_mynetworks,reject
+    state: present
+    backup: "{{ create_backups }}"
+  tags: [misc, postfix]
