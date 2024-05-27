@@ -1,0 +1,9 @@
+all:
+  hosts:
+    alma9cis:
+      ansible_host: 192.168.0.50
+      ansible_ssh_user: simon
+      ansible_ssh_pass: password
+      ansible_become_pass: password
+      grub_password: password
+      root_pwhash: $6$rounds=9000$saltnvinegar$/qfNhSaCQS4bB8utn908zhEV1bBjsnfIKxq5DfNlsgGBx6HhIML339oZz8XK/Mf8ZxD.DZfxr2a2OcYnCCE.o1

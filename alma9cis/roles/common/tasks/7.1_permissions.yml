@@ -1,0 +1,132 @@
+---
+- name: 7.1.1 Ensure permissions on /etc/passwd are configured
+  ansible.builtin.file:
+    path: /etc/passwd
+    owner: root
+    group: root
+    mode: "0644"
+  tags: perms
+
+- name: 7.1.2 Ensure permissions on /etc/passwd- are configured
+  ansible.builtin.file:
+    path: /etc/passwd-
+    owner: root
+    group: root
+    mode: "0600"
+  tags: perms
+
+- name: 7.1.3 Ensure permissions on /etc/group are configured
+  ansible.builtin.file:
+    path: /etc/group
+    owner: root
+    group: root
+    mode: "0644"
+  tags: perms
+
+- name: 7.1.4 Ensure permissions on /etc/group- are configured
+  ansible.builtin.file:
+    path: /etc/group-
+    owner: root
+    group: root
+    mode: "0644"
+  tags: perms
+
+- name: 7.1.5 Ensure permissions on /etc/shadow are configured
+  ansible.builtin.file:
+    path: /etc/shadow
+    owner: root
+    group: root
+    mode: "0000"
+  tags: perms
+
+- name: 7.1.6 Ensure permissions on /etc/shadow- are configured
+  ansible.builtin.file:
+    path: /etc/shadow-
+    owner: root
+    group: root
+    mode: "0000"
+  tags: perms
+
+- name: 7.1.7 Ensure permissions on /etc/gshadow are configured
+  ansible.builtin.file:
+    path: /etc/gshadow
+    owner: root
+    group: root
+    mode: "0000"
+  tags: perms
+
+- name: 7.1.8 Ensure permissions on /etc/gshadow- are configured
+  ansible.builtin.file:
+    path: /etc/gshadow-
+    owner: root
+    group: root
+    mode: "0000"
+  tags: perms
+
+- name: 7.1.9 Ensure permissions on /etc/shells are configured
+  ansible.builtin.file:
+    path: /etc/shells
+    owner: root
+    group: root
+    mode: "0644"
+  tags: perms
+
+- name: 7.1.10 Ensure permissions on /etc/security/opasswd are configured
+  ansible.builtin.file:
+    path: /etc/security/opasswd
+    owner: root
+    group: root
+    mode: "0600"
+  tags: perms
+
+- name: Find world-writable files
+  ansible.builtin.shell: find / \( -type f -o -type d \) -not \( -path /proc -prune \) -not \( -path /run/user -prune \) -not \( -path /var/tmp -prune \) -not \( -path /tmp -prune \) -not \( -path /dev -prune \) -not \( -path /sys -prune \) -perm -0002 -print 2>/dev/null
+  register: world_writable_files
+  changed_when: false
+  failed_when: false
+  tags: perms
+
+- name: 7.1.11 Ensure world writable files and directories are secured
+  ansible.builtin.debug:
+    msg: "Please review the following world-writable files: {{ world_writable_files.stdout_lines }}"
+  when: world_writable_files.stdout_lines | length > 0
+  tags: perms
+
+- name: Find orphaned files
+  ansible.builtin.shell: find / \( -type f -o -type d \) \( -nouser -o -nogroup \) -print 2>/dev/null
+  register: orphaned_files
+  changed_when: false
+  failed_when: false
+  tags: perms
+
+- name: 7.1.12 Ensure no files or directories without an owner and a group exist
+  ansible.builtin.debug:
+    msg: "Please review the following orphaned files: {{ orphaned_files.stdout_lines }}"
+  when: orphaned_files.stdout_lines | length > 0
+  tags: perms
+
+- name: Find SUID/SGID files
+  ansible.builtin.shell: find / -type f \( -perm -2000 -o -perm -4000 \) -print 2>/dev/null
+  register: suid_files
+  changed_when: false
+  failed_when: false
+  tags: perms
+
+- name: 7.1.13 Ensure SUID and SGID files are reviewed
+  ansible.builtin.debug:
+    msg: "Please review the following SUID/SGID files: {{ suid_files.stdout_lines }}"
+  when: suid_files.stdout_lines | length > 0
+  tags: perms
+
+- name: Verify RPMs
+  ansible.builtin.command: rpm -Va --noconfig  # noqa: command-instead-of-module
+  register: rpm_verify
+  changed_when: false
+  failed_when: false
+  tags: perms
+
+- name: 7.1.14 Audit system file permissions
+  ansible.builtin.debug:
+    msg: "The following system RPMs have been modified: {{ rpm_verify.stdout_lines }}"
+  when: rpm_verify.stdout_lines | length > 0
+  tags: perms

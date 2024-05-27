@@ -1,0 +1,8 @@
+---
+- name: grub2-mkconfig
+  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  changed_when: false
+
+- name: augenrules
+  ansible.builtin.command: augenrules --load
+  changed_when: false

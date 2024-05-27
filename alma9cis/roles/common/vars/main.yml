@@ -1,0 +1,50 @@
+---
+create_backups: 'true'
+ntp_server: uk.pool.ntp.org
+loghost: 192.168.0.77
+systemwide_crypto: FIPS
+ssh_group: staff
+su_group: sugroup
+auditd_space_left_action: email
+auditd_admin_space_left_action: halt
+auditd_max_log_file_action: keep_logs
+auditd_audit_backlog_limit: 8192
+auditd_max_log_file_size: 8
+logindefs_retries: 3
+
+# greater than 0
+logindefs_pass_min_days: 1
+
+# 7 or more
+logindefs_pass_warn_age: 7
+
+# 365 or less
+logindefs_pass_max_days: 30
+
+# 14 or more
+logindefs_pass_min_len: 14
+
+# 2 or more
+pwquality_difok: 2
+
+# 4 or more
+pwquality_minclass: 4
+
+# 1-3
+pwquality_maxrepeat: 3
+
+# 1-3
+pwquality_maxseq: 3
+
+# 1 or more
+pwhistory_remember: 24
+
+# 1-45
+useradd_inactive: 1
+
+# 900 secs or less
+bash_timeout_secs: 900
+csh_timeout_mins: 15
+
+# 027 or better e.g. 077
+umask: "027"

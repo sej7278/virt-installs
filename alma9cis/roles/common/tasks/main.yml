@@ -1,0 +1,100 @@
+---
+- name: 1.1 Filesystem
+  ansible.builtin.include_tasks: 1.1_filesystems.yml
+  tags: always
+
+- name: 1.2 Package Management
+  ansible.builtin.include_tasks: 1.2_patching.yml
+  tags: always
+
+- name: 1.3 Mandatory Access Control
+  ansible.builtin.include_tasks: 1.3_mac.yml
+  tags: always
+
+- name: 1.4 Configure Bootloader
+  ansible.builtin.include_tasks: 1.4_bootloader.yml
+  tags: always
+
+- name: 1.5 Configure Additional Process Hardening
+  ansible.builtin.include_tasks: 1.5_hardening.yml
+  tags: always
+
+- name: 1.6 Configure system wide crypto policy
+  ansible.builtin.include_tasks: 1.6_crypto.yml
+  tags: always
+
+- name: 1.7 Configure Command Line Warning Banners
+  ansible.builtin.include_tasks: 1.7_banners.yml
+  tags: always
+
+- name: 1.8 Configure GNOME Display Manager
+  ansible.builtin.include_tasks: 1.8_gdm.yml
+  tags: always
+
+- name: 2.1 Configure Server Services
+  ansible.builtin.include_tasks: 2.1_services.yml
+  tags: always
+
+- name: 2.2 Configure Client Services
+  ansible.builtin.include_tasks: 2.2_clients.yml
+  tags: always
+
+- name: 2.3 Configure Time Synchronization
+  ansible.builtin.include_tasks: 2.3_timesync.yml
+  tags: always
+
+- name: 2.4 Job Schedulers
+  ansible.builtin.include_tasks: 2.4_schedulers.yml
+  tags: always
+
+- name: 3.1 Configure Network Devices
+  ansible.builtin.include_tasks: 3.1_network_devices.yml
+  tags: always
+
+- name: 3.2 Configure Network Kernel Modules
+  ansible.builtin.include_tasks: 3.2_network_kmods.yml
+  tags: always
+
+- name: 3.3 Configure Network Kernel Parameters
+  ansible.builtin.include_tasks: 3.3_network_params.yml
+  tags: always
+
+- name: 4.1 Configure a firewall utility
+  ansible.builtin.include_tasks: 4.1_firewall.yml
+  tags: always
+
+- name: 5.1 Configure SSH Server
+  ansible.builtin.include_tasks: 5.1_ssh.yml
+  tags: always
+
+- name: 5.2 Configure privilege escalation
+  ansible.builtin.include_tasks: 5.2_privilege.yml
+  tags: always
+
+- name: 5.3 Pluggable Authentication Modules
+  ansible.builtin.include_tasks: 5.3_pam.yml
+  tags: always
+
+- name: 5.4 User Accounts and Environment
+  ansible.builtin.include_tasks: 5.4_users.yml
+  tags: always
+
+- name: 6.1 Configure Integrity Checking
+  ansible.builtin.include_tasks: 6.1_aide.yml
+  tags: always
+
+- name: 6.2 System Logging
+  ansible.builtin.include_tasks: 6.2_logging.yml
+  tags: always
+
+- name: 6.3 System Auditing
+  ansible.builtin.include_tasks: 6.3_auditd.yml
+  tags: always
+
+- name: 7.1 System File Permissions
+  ansible.builtin.include_tasks: 7.1_permissions.yml
+  tags: always
+
+- name: 7.2 Local User and Group Settings
+  ansible.builtin.include_tasks: 7.2_groups.yml
+  tags: always

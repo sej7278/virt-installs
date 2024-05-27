@@ -1,0 +1,3 @@
+Defaults use_pty
+Defaults logfile="/var/log/sudo.log"
+Defaults timestamp_timeout=15

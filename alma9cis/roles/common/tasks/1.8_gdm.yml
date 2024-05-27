@@ -1,0 +1,17 @@
+---
+# 1.8.2 Ensure GDM login banner is configured
+# 1.8.3 Ensure GDM disable-user-list option is enabled
+# 1.8.4 Ensure GDM screen locks when the user is idle
+# 1.8.5 Ensure GDM screen locks cannot be overridden
+# 1.8.6 Ensure GDM automatic mounting of removable media is disabled
+# 1.8.7 Ensure GDM disabling automatic mounting of removable media is not overridden
+# 1.8.8 Ensure GDM autorun-never is enabled
+# 1.8.9 Ensure GDM autorun-never is not overridden
+# 1.8.10 Ensure XDCMP is not enabled
+- name: 1.8.1 Ensure GNOME Display Manager is removed
+  ansible.builtin.dnf:
+    name: gdm
+    state: absent
+  tags:
+    - dnf
+    - gdm

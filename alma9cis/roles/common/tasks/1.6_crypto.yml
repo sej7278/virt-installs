@@ -1,0 +1,68 @@
+---
+- name: 1.6.1 Ensure system wide crypto policy is not set to legacy
+  ansible.builtin.command: update-crypto-policies --set {{ systemwide_crypto }}
+  changed_when: false
+  tags: crypto
+
+# failed_when to suppress grep's weird error codes, changed_when to suppress command output
+- name: Find SHA1 usage (hash/sign)
+  ansible.builtin.command: grep -rEi '^(hash|sign)\s*=\s*.*sha1' /etc/crypto-policies/state/CURRENT.pol
+  register: sha1_hashsign
+  failed_when: sha1_hashsign.rc == 2
+  changed_when: false
+  tags: crypto
+
+- name: 1.6.2 Ensure system wide crypto policy disables sha1 hash and signature support (hash/sign)
+  ansible.builtin.debug:
+    msg: "The following SHA1 hash/sign algorithms were found and should be removed from the system-wide crypto policy: {{ sha1_hashsign.stdout_lines }}"
+  when: sha1_hashsign.stdout_lines | length > 0
+  tags: crypto
+
+- name: Find SHA1 usage (certs)
+  ansible.builtin.command: grep 'sha1_in_certs\s*=\s*1' /etc/crypto-policies/state/CURRENT.pol
+  register: sha1_certs
+  failed_when: sha1_certs.rc == 2
+  changed_when: false
+  tags: crypto
+
+- name: 1.6.2 Ensure system wide crypto policy disables sha1 hash and signature support (certs)
+  ansible.builtin.debug:
+    msg: "SHA1 usage in certificates is not disabled in the system-wide crypto policy."
+  when: sha1_certs.stdout_lines | length > 0
+  tags: crypto
+
+- name: Find CBC ciphers
+  ansible.builtin.command: grep -iE '^cipher@.*ssh.*\s*=\s*.*cbc' /etc/crypto-policies/state/CURRENT.pol
+  register: cbc_ciphers
+  failed_when: cbc_ciphers.rc == 2
+  changed_when: false
+  tags: crypto
+
+- name: 1.6.3 Ensure system wide crypto policy disables cbc for ssh
+  ansible.builtin.debug:
+    msg: "CBC ciphers were found and should be removed from the SSH config: {{ cbc_ciphers.stdout_lines }}"
+  when: cbc_ciphers.stdout_lines | length > 0
+  tags: crypto
+
+- name: Find weak MACs
+  ansible.builtin.command: grep -iE '^mac*\s*=\s*.*-64' /etc/crypto-policies/state/CURRENT.pol
+  register: weak_macs
+  failed_when: weak_macs.rc == 2
+  changed_when: false
+  tags: crypto
+
+- name: 1.6.4 Ensure system wide crypto policy disables macs less than 128 bits
+  ansible.builtin.debug:
+    msg: "Weak MACs were found and should be removed from the system-wide crypto policy: {{ weak_macs.stdout_lines }}"
+  when: weak_macs.stdout_lines | length > 0
+  tags: crypto
+
+- name: 1.6.5 Ensure system wide crypto policy is not set in sshd configuration
+  ansible.builtin.lineinfile:
+    path: /etc/sysconfig/sshd
+    regexp: "^CRYPTO_POLICY.*$"
+    state: absent
+    backup: "{{ create_backups }}"
+  tags:
+    - ssh
+    - crypto

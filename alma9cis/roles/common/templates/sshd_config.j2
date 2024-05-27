@@ -1,0 +1,60 @@
+# policies covered by system-wide-crypto (needs to be at the top):
+# 5.1.7, 5.1.6, 5.1.5
+Include /etc/ssh/sshd_config.d/*.conf
+
+# required as ipv6 is disabled
+AddressFamily inet
+ListenAddress 0.0.0.0
+
+# 5.1.4
+AllowGroups {{ ssh_group }}
+
+# 5.1.22
+Banner /etc/issue.net
+
+# 5.1.20
+ClientAliveInterval 15
+ClientAliveCountMax 3
+
+# 5.1.18
+DisableForwarding yes
+
+# 5.1.16
+GSSAPIAuthentication no
+
+# 5.1.13
+HostbasedAuthentication no
+
+# 5.1.14
+IgnoreRhosts yes
+
+# 5.1.9
+LoginGraceTime 60
+
+# 5.1.8
+LogLevel INFO
+
+# 5.1.11
+MaxAuthTries 4
+
+# 5.1.12
+MaxSessions 10
+
+# 5.1.21
+MaxStartups 10:30:60
+
+# 5.1.15
+PermitEmptyPasswords no
+
+# 5.1.10
+PermitRootLogin no
+
+# 5.1.19
+PermitUserEnvironment no
+
+# 5.1.17
+UsePAM yes
+
+# defaults
+AuthorizedKeysFile .ssh/authorized_keys
+Subsystem sftp /usr/libexec/openssh/sftp-server

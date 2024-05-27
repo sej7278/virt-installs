@@ -1,0 +1,41 @@
+---
+# just disable ipv6 in the kernel - will cause sysctl to error
+- name: 3.1.1 Ensure IPv6 status is identified
+  ansible.builtin.command: grubby --update-kernel=ALL --args="ipv6.disable=1"
+  changed_when: false
+  tags: protocols
+
+- name: 3.1.2 Ensure wireless interfaces are disabled
+  ansible.builtin.command: nmcli radio all off
+  changed_when: false
+  tags: protocols
+
+- name: Remove wifi packages
+  ansible.builtin.dnf:
+    name:
+      - wpa_supplicant
+      - b43-openfwwf
+      - iw*
+    state: absent
+  tags:
+    - protocols
+    - dnf
+
+- name: Disable wifi drivers
+  ansible.builtin.copy:
+    src: files/modprobe/wifi.conf
+    dest: /etc/modprobe.d/wifi.conf
+    owner: root
+    group: root
+    mode: "0600"
+  tags:
+    - protocols
+    - modprobe
+
+- name: 3.1.3 Ensure bluetooth services are not in use
+  ansible.builtin.dnf:
+    name: bluez
+    state: absent
+  tags:
+    - protocols
+    - dnf

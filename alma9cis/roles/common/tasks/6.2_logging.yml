@@ -1,0 +1,109 @@
+---
+# below are n/a due to using rsyslog alongside journald (not remote):
+# 6.2.2.5 Ensure journald is not configured to send logs to rsyslog
+# 6.2.2.6 Ensure journald log rotation is configured per site policy
+# 6.2.2.7 Ensure journald default file permissions configured
+
+- name: 6.2.1.1 Ensure rsyslog is installed
+  ansible.builtin.dnf:
+    name: rsyslog
+    state: present
+  tags:
+    - logging
+    - dnf
+
+- name: 6.2.1.2 Ensure rsyslog service is enabled
+  ansible.builtin.systemd:
+    name: rsyslog
+    enabled: true
+  tags: logging
+
+- name: 6.2.1.3 Ensure journald is configured to send logs to rsyslog
+  community.general.ini_file:
+    path: /etc/systemd/journald.conf
+    section: Journal
+    option: ForwardToSyslog
+    value: "yes"
+    state: present
+    exclusive: true
+    no_extra_spaces: true
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags:
+    - logging
+    - systemd
+
+# 6.2.1.5 Ensure logging is configured
+# 6.2.1.6 Ensure rsyslog is configured to send logs to a remote log host
+# 6.2.3.2 Ensure access to all logfiles has been configured
+- name: 6.2.1.4 Ensure rsyslog default file permissions are configured
+  ansible.builtin.template:
+    src: templates/rsyslog.j2
+    dest: /etc/rsyslog.d/cis.conf
+    mode: "0600"
+    owner: root
+    group: root
+  tags: logging
+
+- name: 6.2.1.7 Ensure rsyslog is not configured to receive logs from a remote client
+  ansible.builtin.lineinfile:
+    path: /etc/rsyslog.conf
+    regexp: "^.*(InputTCPServerRun|imtcp).*$"
+    state: absent
+    backup: "{{ create_backups }}"
+  tags: logging
+
+# 6.2.2.1.1 Ensure systemd-journal-remote is installed
+# 6.2.2.1.2 Ensure systemd-journal-remote is configured
+# 6.2.2.1.3 Ensure systemd-journal-remote is enabled
+- name: 6.2.2.1.4 Ensure journald is not configured to receive logs from a remote client
+  ansible.builtin.dnf:
+    name: systemd-journal-remote
+    state: absent
+  tags:
+    - logging
+    - dnf
+    - systemd
+
+- name: 6.2.2.2 Ensure journald service is enabled
+  ansible.builtin.systemd:
+    name: systemd-journald
+    enabled: true
+  tags: logging
+
+- name: 6.2.2.3 Ensure journald is configured to compress large log files
+  community.general.ini_file:
+    path: /etc/systemd/journald.conf
+    section: Journal
+    option: Compress
+    value: "yes"
+    state: present
+    no_extra_spaces: true
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags:
+    - logging
+    - systemd
+
+- name: 6.2.2.4 Ensure journald is configured to write logfiles to persistent disk
+  community.general.ini_file:
+    path: /etc/systemd/journald.conf
+    section: Journal
+    option: Storage
+    value: persistent
+    state: present
+    no_extra_spaces: true
+    mode: "0644"
+    backup: "{{ create_backups }}"
+  tags:
+    - logging
+    - systemd
+
+- name: 6.2.3.1 Ensure logrotate is configured
+  ansible.builtin.copy:
+    src: files/logrotate
+    dest: /etc/logrotate.d/cis
+    mode: "0644"
+    owner: root
+    group: root
+  tags: logging

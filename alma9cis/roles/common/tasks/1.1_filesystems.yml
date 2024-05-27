@@ -1,0 +1,129 @@
+---
+- name: 1.1.1.1 Ensure cramfs kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/cramfs.conf
+    dest: /etc/modprobe.d/cramfs.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: modprobe
+
+- name: 1.1.1.2 Ensure freevxfs kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/freevxfs.conf
+    dest: /etc/modprobe.d/freevxfs.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: modprobe
+
+# 1.1.1.4 Ensure hfsplus kernel module is not available
+- name: 1.1.1.3 Ensure hfs kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/hfs.conf
+    dest: /etc/modprobe.d/hfs.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: modprobe
+
+- name: 1.1.1.5 Ensure jffs2 kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/jffs2.conf
+    dest: /etc/modprobe.d/jffs2.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: modprobe
+
+- name: 1.1.1.6 Ensure squashfs kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/squashfs.conf
+    dest: /etc/modprobe.d/squashfs.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: modprobe
+
+# udf is required by azure
+- name: 1.1.1.7 Ensure udf kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/udf.conf
+    dest: /etc/modprobe.d/udf.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: modprobe
+
+- name: 1.1.1.8 Ensure usb-storage kernel module is not available
+  ansible.builtin.copy:
+    src: files/modprobe/usb-storage.conf
+    dest: /etc/modprobe.d/usb-storage.conf
+    owner: root
+    group: root
+    mode: "0644"
+  tags: modprobe
+
+# defaults to 50% of ram
+- name: 1.1.2.1 Configure /tmp
+  ansible.posix.mount:
+    path: /tmp
+    fstype: tmpfs
+    src: tmpfs
+    opts: defaults,noexec,nosuid,nodev
+    state: present
+  tags: fstab
+
+- name: 1.1.2.2 Configure /dev/shm
+  ansible.posix.mount:
+    path: /dev/shm
+    fstype: tmpfs
+    src: tmpfs
+    opts: defaults,noexec,nosuid,nodev
+    state: present
+  tags: fstab
+
+- name: 1.1.2.3 Configure /home
+  ansible.posix.mount:
+    path: /home
+    fstype: xfs
+    src: /dev/mapper/rootvg-home
+    opts: defaults,nodev,nosuid
+    state: present
+  tags: fstab
+
+- name: 1.1.2.4 Configure /var
+  ansible.posix.mount:
+    path: /var
+    fstype: xfs
+    src: /dev/mapper/rootvg-var
+    opts: defaults,nodev,nosuid
+    state: present
+  tags: fstab
+
+- name: 1.1.2.5 Configure /var/tmp
+  ansible.posix.mount:
+    path: /var/tmp
+    fstype: xfs
+    src: /dev/mapper/rootvg-vartmp
+    opts: defaults,noexec,nosuid,nodev
+    state: present
+  tags: fstab
+
+- name: 1.1.2.6 Configure /var/log
+  ansible.posix.mount:
+    path: /var/log
+    fstype: xfs
+    src: /dev/mapper/rootvg-log
+    opts: defaults,noexec,nosuid,nodev
+    state: present
+  tags: fstab
+
+- name: 1.1.2.7 Configure /var/log/audit
+  ansible.posix.mount:
+    path: /var/log/audit
+    fstype: xfs
+    src: /dev/mapper/rootvg-audit
+    opts: defaults,noexec,nosuid,nodev
+    state: present
+  tags: fstab
