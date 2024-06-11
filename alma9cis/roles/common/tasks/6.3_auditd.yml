@@ -279,6 +279,7 @@
   with_items: "{{ audit_logs.files }}"
   tags: auditd
 
+# 6.3.4.9 Ensure audit tools owner is configured
 # 6.3.4.10 Ensure audit tools group owner is configured
 - name: 6.3.4.8 Ensure audit tools mode is configured (auditctl)
   ansible.builtin.file:

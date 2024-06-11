@@ -1,10 +1,5 @@
 ---
-# below are n/a due to using rsyslog alongside journald (not remote):
-# 6.2.2.5 Ensure journald is not configured to send logs to rsyslog
-# 6.2.2.6 Ensure journald log rotation is configured per site policy
-# 6.2.2.7 Ensure journald default file permissions configured
-
-- name: 6.2.1.1 Ensure rsyslog is installed
+- name: 6.2.3.1 Ensure rsyslog is installed
   ansible.builtin.dnf:
     name: rsyslog
     state: present
@@ -12,13 +7,13 @@
     - logging
     - dnf
 
-- name: 6.2.1.2 Ensure rsyslog service is enabled
+- name: 6.2.3.2 Ensure rsyslog service is enabled and active
   ansible.builtin.systemd:
     name: rsyslog
     enabled: true
   tags: logging
 
-- name: 6.2.1.3 Ensure journald is configured to send logs to rsyslog
+- name: 6.2.3.3 Ensure journald is configured to send logs to rsyslog
   community.general.ini_file:
     path: /etc/systemd/journald.conf
     section: Journal
@@ -33,10 +28,10 @@
     - logging
     - systemd
 
-# 6.2.1.5 Ensure logging is configured
-# 6.2.1.6 Ensure rsyslog is configured to send logs to a remote log host
-# 6.2.3.2 Ensure access to all logfiles has been configured
-- name: 6.2.1.4 Ensure rsyslog default file permissions are configured
+# 6.2.3.4 Ensure rsyslog log file creation mode is configured
+# 6.2.3.6 Ensure rsyslog is configured to send logs to a remote log host
+# 6.2.4.1 Ensure access to all logfiles has been configured
+- name: 6.2.3.5 Ensure logging is configured
   ansible.builtin.template:
     src: templates/rsyslog.j2
     dest: /etc/rsyslog.d/cis.conf
@@ -45,7 +40,7 @@
     group: root
   tags: logging
 
-- name: 6.2.1.7 Ensure rsyslog is not configured to receive logs from a remote client
+- name: 6.2.3.7 Ensure rsyslog is not configured to receive logs from a remote client
   ansible.builtin.lineinfile:
     path: /etc/rsyslog.conf
     regexp: "^.*(InputTCPServerRun|imtcp).*$"
@@ -55,8 +50,8 @@
 
 # 6.2.2.1.1 Ensure systemd-journal-remote is installed
 # 6.2.2.1.2 Ensure systemd-journal-remote is configured
-# 6.2.2.1.3 Ensure systemd-journal-remote is enabled
-- name: 6.2.2.1.4 Ensure journald is not configured to receive logs from a remote client
+# 6.2.2.1.3 Ensure systemd-journal-remote is enabled and active
+- name: 6.2.2.1.4 Ensure systemd-journal-remote service is not in use
   ansible.builtin.dnf:
     name: systemd-journal-remote
     state: absent
@@ -65,13 +60,13 @@
     - dnf
     - systemd
 
-- name: 6.2.2.2 Ensure journald service is enabled
+- name: 6.2.1.1 Ensure journald service is enabled and active
   ansible.builtin.systemd:
     name: systemd-journald
     enabled: true
   tags: logging
 
-- name: 6.2.2.3 Ensure journald is configured to compress large log files
+- name: 6.2.2.3 Ensure journald Compress is configured
   community.general.ini_file:
     path: /etc/systemd/journald.conf
     section: Journal
@@ -85,7 +80,7 @@
     - logging
     - systemd
 
-- name: 6.2.2.4 Ensure journald is configured to write logfiles to persistent disk
+- name: 6.2.2.4 Ensure journald Storage is configured
   community.general.ini_file:
     path: /etc/systemd/journald.conf
     section: Journal
@@ -99,7 +94,7 @@
     - logging
     - systemd
 
-- name: 6.2.3.1 Ensure logrotate is configured
+- name: 6.2.3.8 Ensure rsyslog logrotate is configured
   ansible.builtin.copy:
     src: files/logrotate
     dest: /etc/logrotate.d/cis

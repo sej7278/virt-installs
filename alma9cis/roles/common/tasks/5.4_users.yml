@@ -113,7 +113,7 @@
   tags: users
 
 # mkpasswd --method=sha-512 --salt=saltnvinegar --rounds=9000
-- name: 5.4.2.4 Ensure root password is set
+- name: 5.4.2.4 Ensure root account access is controlled
   ansible.builtin.user:
     name: root
     update_password: always

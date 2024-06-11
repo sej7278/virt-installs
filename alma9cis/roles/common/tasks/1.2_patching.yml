@@ -1,11 +1,17 @@
 ---
 # 5.3.1.1 Ensure latest version of pam is installed
 # 5.3.1.2 Ensure latest version of authselect is installed
+# 5.3.1.3 Ensure latest version of libpwquality is installed
 - name: 1.2.2.1 Ensure updates, patches, and additional security software are installed
   ansible.builtin.dnf:
     name: "*"
     state: latest
     update_only: true
+  tags: dnf
+
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+    manager: auto
   tags: dnf
 
 - name: 1.2.1.2 Ensure gpgcheck is globally activated

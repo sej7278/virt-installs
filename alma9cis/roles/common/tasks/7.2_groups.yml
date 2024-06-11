@@ -38,14 +38,6 @@
   when: passwd_groups.stdout_lines | length > 0
   tags: groups
 
-- name: 7.2.4 Ensure shadow group is empty
-  ansible.builtin.replace:
-    path: /etc/group
-    regexp: '^shadow:[^:]*:([^:]*):[^:]*\n$'
-    replace: 'shadow:x:\1:\n'
-    backup: "{{ create_backups }}"
-  tags: groups
-
 - name: Find duplicate UIDs
   ansible.builtin.shell:
     cmd: |
@@ -55,7 +47,7 @@
   register: dupe_uids
   tags: groups
 
-- name: 7.2.5 Ensure no duplicate UIDs exist
+- name: 7.2.4 Ensure no duplicate UIDs exist
   ansible.builtin.debug:
     msg: "The following duplicate UIDs were found and should be fixed: {{ dupe_uids.stdout_lines }}"
   when: dupe_uids.stdout_lines | length > 0
@@ -70,7 +62,7 @@
   register: dupe_gids
   tags: groups
 
-- name: 7.2.6 Ensure no duplicate GIDs exist
+- name: 7.2.5 Ensure no duplicate GIDs exist
   ansible.builtin.debug:
     msg: "The following duplicate GIDs were found and should be fixed: {{ dupe_gids.stdout_lines }}"
   when: dupe_gids.stdout_lines | length > 0
@@ -85,7 +77,7 @@
   register: dupe_users
   tags: groups
 
-- name: 7.2.7 Ensure no duplicate user names exist
+- name: 7.2.6 Ensure no duplicate user names exist
   ansible.builtin.debug:
     msg: "The following duplicate usernames were found and should be fixed: {{ dupe_users.stdout_lines }}"
   when: dupe_users.stdout_lines | length > 0
@@ -100,13 +92,13 @@
   register: dupe_groups
   tags: groups
 
-- name: 7.2.8 Ensure no duplicate group names exist
+- name: 7.2.7 Ensure no duplicate group names exist
   ansible.builtin.debug:
     msg: "The following duplicate groups were found and should be fixed: {{ dupe_groups.stdout_lines }}"
   when: dupe_groups.stdout_lines | length > 0
   tags: groups
 
-- name: 7.2.9 Ensure local interactive user home directories are configured (root)
+- name: 7.2.8 Ensure local interactive user home directories are configured (root)
   ansible.builtin.file:
     path: /root
     owner: root
@@ -114,7 +106,7 @@
     mode: "0700"
   tags: groups
 
-- name: 7.2.9 Ensure local interactive user home directories are configured (user)
+- name: 7.2.8 Ensure local interactive user home directories are configured (user)
   ansible.builtin.file:
     path: /home/{{ ansible_ssh_user }}
     owner: "{{ ansible_ssh_user }}"
@@ -122,7 +114,7 @@
     mode: "0700"
   tags: groups
 
-- name: 7.2.10 Ensure local interactive user dot files access is configured
+- name: 7.2.9 Ensure local interactive user dot files access is configured
   ansible.builtin.command: find / -type f \( -name .forward -o -name .netrc -o -name .rhosts \) -exec rm {} \;
   changed_when: false
   tags: groups

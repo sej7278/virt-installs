@@ -172,6 +172,7 @@
     regexp: '^inet_interfaces.*'
     replace: inet_interfaces = loopback-only
     backup: "{{ create_backups }}"
+  when: "'postfix' in ansible_facts.packages"
   tags:
     - servers
     - dnf

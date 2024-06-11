@@ -36,6 +36,7 @@
     mode: "0644"
   tags: modprobe
 
+# squashfs is required by snap
 - name: 1.1.1.6 Ensure squashfs kernel module is not available
   ansible.builtin.copy:
     src: files/modprobe/squashfs.conf
