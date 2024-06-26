@@ -3,13 +3,23 @@
   ansible.builtin.rpm_key:
     key: https://repo.tuxcare.com/tuxcare/RPM-GPG-KEY-TuxCare
     fingerprint: FAD7 8590 81D0 738B 7A82  8496 D07B F2A0 8D50 EB66
-  tags: [dnf, tuxcare]
+  tags: tuxcare
 
+# https://docs.tuxcare.com/enterprise-support-for-almalinux/#gnupg-keys
+- name: Verify the TuxCare GPG key
+  ansible.builtin.rpm_key:
+    key: https://repo.tuxcare.com/tuxcare/RPM-GPG-KEY-TuxCare
+    state: present
+    validate_certs: true
+    fingerprint: FAD7 8590 81D0 738B 7A82  8496 D07B F2A0 8D50 EB66
+  tags: tuxcare
+
+# TODO: update link to 9.2
 - name: Install tuxcare-release
   ansible.builtin.dnf:
     name: https://repo.tuxcare.com/tuxcare/tuxcare-release-latest-9.x86_64.rpm
     state: present
-  tags: [dnf, tuxcare]
+  tags: tuxcare
 
 - name: Register using tuxctl
   ansible.builtin.command: tuxctl --fips -l {{ esu_key }}
@@ -21,4 +31,30 @@
   ansible.builtin.stat:
     path: /etc/dnf/vars/tuxcare_token
   register: tuxcare_token
-  tags: [dnf, tuxcare]
+  tags: tuxcare
+
+# TODO: update kernel to tuxcare.6
+- name: Install FIPS packages
+  ansible.builtin.dnf:
+    name:
+      - kernel-5.14.0-284.11.1.el9_2.tuxcare.5
+      - openssl-3.0.7-20.el9_2.tuxcare.1
+      - libgcrypt-1.10.0-10.el9_2.tuxcare.3
+      - gnutls-utils-3.7.6-23.el9_2.tuxcare.3
+      - nss-tools-3.90.0-6.el9_2.tuxcare.1
+      - nettle-3.8-3.el9_2.tuxcare.1
+      - grub2-common-2.06-61.el9_2.1.alma.tuxcare.els3
+      - selinux-policy-38.1.11-2.el9_2.4.tuxcare.els1
+      - python3-dnf-plugin-versionlock
+    state: present
+  when: tuxcare_token.stat.exists
+  tags: tuxcare
+
+- name: Remove non-FIPS packages
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      rpm -qa | grep -E '^(gnutls|nettle|nss|openssl|libgcrypt|kernel)-[0-9]+' | grep -v tuxcare | grep -v $(uname -r) | xargs rpm -e || true
+  when: tuxcare_token.stat.exists
+  changed_when: false
+  tags: tuxcare

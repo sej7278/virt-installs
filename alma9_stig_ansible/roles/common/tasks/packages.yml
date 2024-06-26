@@ -53,15 +53,12 @@
 - name: Install required packages
   ansible.builtin.dnf:
     name:
-      - kernel-5.14.0-284.11.1.el9_2.tuxcare.5
-      - openssl-3.0.7-20.el9_2.tuxcare.1
-      - libgcrypt-1.10.0-10.el9_2.tuxcare.3
-      - gnutls-utils-3.7.6-23.el9_2.tuxcare.3
-      - nss-tools-3.90.0-6.el9_2.tuxcare.1
-      - nettle-3.8-3.el9_2.tuxcare.1
-      - grub2-common-2.06-61.el9_2.1.alma.tuxcare.els3
-      - selinux-policy-38.1.11-2.el9_2.4.tuxcare.els1
-      - python3-dnf-plugin-versionlock
+      - kernel
+      - openssl
+      - libgcrypt
+      - gnutls-utils
+      - nss-tools
+      - nettle
       - aide
       - audit
       - tmux
@@ -127,23 +124,20 @@
   ansible.builtin.dnf:
     name: "*"
     state: latest
-  when: tuxcare_token.stat.exists
-  tags: [dnf, tuxcare]
+  tags: dnf
 
-# TODO: improve this
-- name: Remove non-FIPS packages
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      rpm -qa | grep -E '^(gnutls|nettle|nss|openssl|libgcrypt|kernel)-[0-9]+' | grep -v tuxcare | grep -v $(uname -r) | xargs rpm -e || true
-  when: tuxcare_token.stat.exists
-  changed_when: false
-  tags: [dnf, tuxcare]
+# immediately restart NetworkManager as when its
+# updated it will refuse connections from nmcli
+- name: Bounce NetworkManager
+  ansible.builtin.systemd_service:
+    name: NetworkManager.service
+    state: restarted
+  tags: dnf
 
 - name: Clean up packages
   ansible.builtin.dnf:
     autoremove: true
-  tags: [dnf, tuxcare]
+  tags: dnf
 
 # SRG-OS-000437-GPOS-00194 (clean requirements)
 # SRG-OS-000366-GPOS-00153 (gpgcheck)
@@ -199,13 +193,4 @@
     state: present
     validate_certs: true
     fingerprint: BF18 AC28 7617 8908 D6E7  1267 D36C B86C B86B 3716
-  tags: dnf
-
-# https://docs.tuxcare.com/enterprise-support-for-almalinux/#gnupg-keys
-- name: Verify the TuxCare GPG key
-  ansible.builtin.rpm_key:
-    key: https://repo.tuxcare.com/tuxcare/RPM-GPG-KEY-TuxCare
-    state: present
-    validate_certs: true
-    fingerprint: FAD7 8590 81D0 738B 7A82  8496 D07B F2A0 8D50 EB66
   tags: dnf

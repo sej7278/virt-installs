@@ -4,6 +4,11 @@
   ansible.builtin.include_tasks: tuxcare.yml
   tags: always
 
+# has to run after tuxcare
+- name: Packages
+  ansible.builtin.include_tasks: packages.yml
+  tags: always
+
 - name: Filesystems
   ansible.builtin.include_tasks: filesystems.yml
   tags: always
@@ -18,10 +23,6 @@
 
 - name: Privileged
   ansible.builtin.include_tasks: privileged.yml
-  tags: always
-
-- name: Packages
-  ansible.builtin.include_tasks: packages.yml
   tags: always
 
 - name: Shells
