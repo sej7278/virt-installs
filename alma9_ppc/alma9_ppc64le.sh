@@ -13,7 +13,7 @@ virt-install \
 --channel unix,target_type=virtio,name=org.qemu.guest_agent.0 \
 --graphics none \
 --metadata title="AlmaLinux 9.1 (ppc64le)" \
---metadata description='192.168.0.3' \
+--metadata description='192.168.0.43' \
 --location /kvm/AlmaLinux-9.1-ppc64le-minimal.iso \
 --extra-args='inst.ks=file:alma9_ppc64le.cfg' \
 --initrd-inject=alma9_ppc64le.cfg \
