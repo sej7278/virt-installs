@@ -14,10 +14,9 @@
     fingerprint: FAD7 8590 81D0 738B 7A82  8496 D07B F2A0 8D50 EB66
   tags: tuxcare
 
-# TODO: update link to 9.2
 - name: Install tuxcare-release
   ansible.builtin.dnf:
-    name: https://repo.tuxcare.com/tuxcare/tuxcare-release-latest-9.x86_64.rpm
+    name: https://repo.tuxcare.com/tuxcare/tuxcare-release-latest-9.2.x86_64.rpm
     state: present
   tags: tuxcare
 
@@ -33,11 +32,10 @@
   register: tuxcare_token
   tags: tuxcare
 
-# TODO: update kernel to tuxcare.6
 - name: Install FIPS packages
   ansible.builtin.dnf:
     name:
-      - kernel-5.14.0-284.11.1.el9_2.tuxcare.5
+      - kernel-5.14.0-284.11.1.el9_2.tuxcare.6
       - openssl-3.0.7-20.el9_2.tuxcare.1
       - libgcrypt-1.10.0-10.el9_2.tuxcare.3
       - gnutls-utils-3.7.6-23.el9_2.tuxcare.3
