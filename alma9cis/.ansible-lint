@@ -1,4 +1,0 @@
-# .ansible-lint
-skip_list:
-    - name[casing]
-    - yaml[line-length]
